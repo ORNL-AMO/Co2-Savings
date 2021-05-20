@@ -4,27 +4,13 @@
   </div>
   <div class="p-0 flex-grow-1">
     <div class="row no-gutters h-100">
-      <div class="col-4 modification pt-2 scroll-item" [ngStyle]="{'height.px': containerHeight}">
-        <!-- <app-operating-hours></app-operating-hours>
-        <div class="pl-2 pr-2">
-          <hr>
-        </div>
-        <app-current-equipment-form></app-current-equipment-form>
-        <div class="pl-2 pr-2">
-          <hr>
-        </div>
-        <app-electrical-equipment-form></app-electrical-equipment-form> -->
+      <div class="mod-panel col-4 pt-2 scroll-item" [ngStyle]="{'height.px': containerHeight}"
+        [ngClass]="{'modification': baselineSelected }" (click)="selectBaseline()">
+        <app-energy-use-forms [isBaseline]="true" [selected]="baselineSelected"></app-energy-use-forms>
       </div>
-      <div class="col-4 modification pt-2 scroll-item" [ngStyle]="{'height.px': containerHeight}">
-        <!-- <app-operating-hours></app-operating-hours>
-        <div class="pl-2 pr-2">
-          <hr>
-        </div>
-        <app-current-equipment-form></app-current-equipment-form>
-        <div class="pl-2 pr-2">
-          <hr>
-        </div>
-        <app-electrical-equipment-form></app-electrical-equipment-form> -->
+      <div class="mod-panel col-4 pt-2 scroll-item" [ngStyle]="{'height.px': containerHeight}"
+        [ngClass]="{'modification': !baselineSelected }" (click)="selectModification()">
+        <app-energy-use-forms [isBaseline]="false" [selected]="!baselineSelected"></app-energy-use-forms>
       </div>
 
       <div class="col-4">
@@ -38,8 +24,8 @@
             </div>
           </div>
           <div class="mr-2 ml-2 p-2">
-            <!-- <app-results *ngIf="tabSelect == 'results'"></app-results>
-            <app-help *ngIf="tabSelect == 'help'"></app-help> -->
+            <app-results *ngIf="tabSelect == 'results'"></app-results>
+            <app-help *ngIf="tabSelect == 'help'"></app-help>
           </div>
         </div>
       </div>

@@ -19,7 +19,7 @@ export class AppComponent {
       this.resizeTabs();
   }
   headerHeight: number;
-
+  baselineSelected: boolean = true;
   constructor() {
 
   }
@@ -39,5 +39,13 @@ export class AppComponent {
     if (this.contentContainer) {
       this.containerHeight = this.contentContainer.nativeElement.offsetHeight - this.bannerElement.nativeElement.offsetHeight;
     }
+  }
+
+  selectBaseline(){
+    this.baselineSelected = true;
+  }
+
+  selectModification(){
+    this.baselineSelected = false;
   }
 }

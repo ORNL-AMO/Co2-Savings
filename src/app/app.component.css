@@ -40,3 +40,8 @@
       cursor: pointer;
       background-color: #fff;
   }
+
+  .mod-panel:hover:not(.modification) {
+    background-color: #fff;
+    cursor: pointer;      
+  }

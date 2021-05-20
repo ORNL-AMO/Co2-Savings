@@ -1,0 +1,36 @@
+.header{
+    border-bottom: #BF3D00 solid 2px;
+    width: 100%;
+    font-size: 18px;
+    text-transform: uppercase;
+    display: inline-block;
+    letter-spacing: 4px;
+    padding-left: 13px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.no-data h3{
+    font-size: 20px;
+}
+
+.no-data p {
+    font-size: 14px;
+    color: #a2a2a2;
+    margin-top: 6px;
+}
+
+
+.click-link:hover{
+    cursor: pointer;
+}
+
+.fa.fa-times-circle-o:hover {
+    cursor: pointer;
+}
+
+
+.click-link.danger{
+    color: red;
+    float: right;
+}

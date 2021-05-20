@@ -1,0 +1,31 @@
+<div class="pr-2 pl-2">
+    <div class="header" *ngIf="isBaseline">
+        Baseline
+    </div>
+
+    <div class="header" *ngIf="!isBaseline">
+        Modification
+    </div>
+    <div class="p-2 text-right" *ngIf="formData">
+        <a class="click-link small" (click)="addEnergyUse()">
+            +Add Energy Use
+        </a>
+    </div>
+
+    <div class="p-2" *ngFor="let data of formData; let index = index;">
+        <label class="group-label">
+            Energy Use #{{index+1}}
+            <span *ngIf="formData.length != 1 || !isBaseline" class="click-link small danger"
+                (click)="removeItem(index)">Delete</span>
+        </label>
+        <app-form [index]="index" [isBaseline]="isBaseline" [selected]="selected"></app-form>
+    </div>
+
+    <div class="p-3 no-data text-center" *ngIf="!formData">
+        <h3>
+            Once you have set up your baseline..
+        </h3>
+        <button type="button" class="btn btn-primary" (click)="addModification()">Add Modified Condition</button>
+        <p>Data will be copied from your current baseline condition.</p>
+    </div>
+</div>
