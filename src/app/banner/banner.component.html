@@ -8,7 +8,25 @@
         <div class="pr-2">
             <button class="btn btn-secondary my-2 my-sm-0" (click)="resetData()">Reset Data</button>
         </div>
-
-        <button class="btn btn-primary my-2 my-sm-0" (click)="generateExample()">Use Example</button>
+        <div class="pr-2">
+            <button class="btn btn-primary my-2 my-sm-0" (click)="generateExample()">Use Example</button>
+        </div>
+        <button class="btn btn-info my-2 my-sm-0" (click)="toggleUnitsModal()">&#x2699;</button>
     </div>
 </nav>
+
+
+
+
+<!--bulk delete-->
+<div class="popup" [class.open]="displayUnitsModal">
+    <div class="popup-header text-center" *ngIf="displayUnitsModal">Select Units of Measure
+        <button class="item-right" (click)="toggleUnitsModal()">x</button>
+    </div>
+    <div class="popup-body text-center">
+        <div class="btn-group">
+            <button class="btn" [ngClass]="{'btn-secondary': energyUnits == 'MMBtu'}" (click)="setUnits('MMBtu')">MMBtu</button>
+            <button class="btn" [ngClass]="{'btn-secondary': energyUnits == 'GJ'}" (click)="setUnits('GJ')">GJ</button>
+        </div>
+    </div>
+</div>

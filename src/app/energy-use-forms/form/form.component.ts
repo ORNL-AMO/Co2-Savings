@@ -25,9 +25,14 @@ export class FormComponent implements OnInit {
   fuelOptions: Array<FuelTypeProperties>;
   subregions: Array<SubRegionData>;
   isFormChange: boolean = false;
+  energyUnitsSub: Subscription;
+  energyUnits: string;
   constructor(private co2SavingsService: Co2SavingsService) { }
 
   ngOnInit(): void {
+    this.energyUnitsSub = this.co2SavingsService.energyUnits.subscribe(val => {
+      this.energyUnits = val;
+    })
     this.otherFuels = otherFuels;
     this.eGridRegions = electricityGridRegions;
     if (this.isBaseline) {

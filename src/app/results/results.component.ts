@@ -18,9 +18,13 @@ export class ResultsComponent implements OnInit {
   modificationDataSub: Subscription;
   baselineTotal: number;
   modificationTotal: number;
+  energyUnitsSub: Subscription;
   constructor(private co2SavingsService: Co2SavingsService, private plotlyService: PlotlyService) { }
 
   ngOnInit(): void {
+    this.energyUnitsSub = this.co2SavingsService.energyUnits.subscribe(val => {
+      this.drawChart();
+    });
     this.baselineDataSub = this.co2SavingsService.baselineData.subscribe(val => {
       this.baselineData = this.setResults(val);
       this.baselineTotal = this.getTotal(this.baselineData);
@@ -42,6 +46,7 @@ export class ResultsComponent implements OnInit {
   ngOnDestroy() {
     this.baselineDataSub.unsubscribe();
     this.modificationDataSub.unsubscribe();
+    this.energyUnitsSub.unsubscribe();
   }
   setResults(data: Array<Co2SavingsData>): Array<Co2SavingsData> {
     if (data) {
@@ -64,66 +69,65 @@ export class ResultsComponent implements OnInit {
 
   drawChart() {
     if (this.gaugeChart) {
-      let percentValue: number = 0;
-      if (this.modificationTotal) {
-        percentValue = ((this.baselineTotal - this.modificationTotal) / this.baselineTotal) * 100;
-      }
-
-      var data = [
+      let data = [
         {
-          domain: { x: [0, 1], y: [0, 1] },
-          value: percentValue,
-          number: {
-            suffix: '%',
-            font: {
-              family: "Helvetica Neue, sans-serif",
-              size: 20
-            }
-          },
-          title: {
-            text: 'CO&#8322; Savings',
-            font: {
-              family: "Helvetica Neue, sans-serif",
-              size: 20
-            }
-          },
-          type: "indicator",
-          mode: "gauge+number",
-          gauge: {
-            axis: {
-              range: [0, 50],
-              // tickwidth: 1 
-            },
-            bar: {
+          name: "Baseline",
+          type: "bar",
+          x: this.baselineData.map((data, index) => { return "Energy Use #" + (index + 1) }),
+          y: this.baselineData.map(data => { return data.totalEmissionOutput }),
+          marker: {
+            color: '#BF3D00'
+          }
+        },
+      ]
+      if (this.modificationData) {
+        data.push(
+          {
+            name: "Modification",
+            type: "bar",
+            x: this.modificationData.map((data, index) => { return "Energy Use #" + (index + 1) }),
+            y: this.modificationData.map(data => { return data.totalEmissionOutput }),
+            marker: {
               color: '#145A32'
             }
-            // steps: [
-            //   { range: [-50, 0], color: "cyan" },
-            //   { range: [0, 50], color: "royalblue" }
-            // ]
-          }
-        }
-      ];
+          })
+      }
+
+      if(this.baselineData.length > 1 || (this.modificationData && this.modificationData.length > 1)){
+        data[0].x.unshift("Total");
+        data[0].y.unshift(this.baselineTotal);
+        if(this.modificationData){
+          data[1].x.unshift("Total");
+          data[1].y.unshift(this.modificationTotal);
+        };
+      }
+
 
       var layout = {
         font: {
           family: "Helvetica Neue, sans-serif"
         },
         title: {
+          text: 'CO&#8322; Savings',
           font: {
             family: "Helvetica Neue, sans-serif",
-            // size: 18
+            size: 18
           }
         },
         xaxis: {
-
         },
         yaxis: {
-
+          title: {
+            text: 'tonne CO<sub>2</sub>',
+            font: {
+              family: "Helvetica Neue, sans-serif",
+              size: 18
+            }
+          }
         },
-        height: 175,
-        margin: { t: 50, b: 10, l: 50, r: 50 },
-        paper_bgcolor: "#efefef",
+        legend: {
+          orientation: 'h'
+        }
       };
       let config = {
         displaylogo: false,
