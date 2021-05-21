@@ -8,6 +8,7 @@ import { HelpComponent } from './help/help.component';
 import { EnergyUseFormsComponent } from './energy-use-forms/energy-use-forms.component';
 import { FormComponent } from './energy-use-forms/form/form.component';
 import { FormsModule } from '@angular/forms';
+import { PlotlyViaWindowModule } from 'angular-plotly.js';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { FormsModule } from '@angular/forms';
   ],
   imports: [
     BrowserModule,
-    FormsModule
+    FormsModule,
+    PlotlyViaWindowModule
   ],
   providers: [],
   bootstrap: [AppComponent]
