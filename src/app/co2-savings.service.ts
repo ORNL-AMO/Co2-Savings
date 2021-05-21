@@ -22,22 +22,22 @@ export class Co2SavingsService {
     this.modificationData = new BehaviorSubject<Array<Co2SavingsData>>(undefined);
   }
 
-  // calculate(data: Co2SavingsData, settings: Settings): Co2SavingsData {
-  //   //use copy for conversion data
-  //   // let dataCpy: Co2SavingsData = JSON.parse(JSON.stringify(data));
-  //   // if (settings.unitsOfMeasure != 'Imperial' && data.energyType == 'Fuel') {
-  //   //   let conversionHelper: number = this.convertUnitsService.value(1).from('GJ').to('MMBtu');
-  //   //   dataCpy.totalEmissionOutputRate = dataCpy.totalEmissionOutputRate / conversionHelper;
-  //   //   dataCpy.electricityUse = this.convertUnitsService.value(dataCpy.electricityUse).from('GJ').to('MMBtu');
-  //   // }
-  //   if (dataCpy.totalEmissionOutputRate && dataCpy.energyUse) {
-  //     //set results on original obj
-  //     data.totalEmissionOutput = (data.totalEmissionOutputRate) * (data.energyUse / 1000);
-  //   } else {
-  //     data.totalEmissionOutput = 0;
-  //   }
-  //   return data;
-  // }
+  setEmissionsOutput(data: Co2SavingsData): Co2SavingsData {
+    //use copy for conversion data
+    // let dataCpy: Co2SavingsData = JSON.parse(JSON.stringify(data));
+    // if (settings.unitsOfMeasure != 'Imperial' && data.energyType == 'Fuel') {
+    //   let conversionHelper: number = this.convertUnitsService.value(1).from('GJ').to('MMBtu');
+    //   dataCpy.totalEmissionOutputRate = dataCpy.totalEmissionOutputRate / conversionHelper;
+    //   dataCpy.electricityUse = this.convertUnitsService.value(dataCpy.electricityUse).from('GJ').to('MMBtu');
+    // }
+    if (data.totalEmissionOutputRate && data.energyUse) {
+      //set results on original obj
+      data.totalEmissionOutput = (data.totalEmissionOutputRate) * (data.energyUse / 1000);
+    } else {
+      data.totalEmissionOutput = 0;
+    }
+    return data;
+  }
 
   generateExample() {
 
