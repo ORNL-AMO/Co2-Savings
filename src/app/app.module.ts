@@ -9,6 +9,7 @@ import { EnergyUseFormsComponent } from './energy-use-forms/energy-use-forms.com
 import { FormComponent } from './energy-use-forms/form/form.component';
 import { FormsModule } from '@angular/forms';
 import { PlotlyViaWindowModule } from 'angular-plotly.js';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { PlotlyViaWindowModule } from 'angular-plotly.js';
   imports: [
     BrowserModule,
     FormsModule,
-    PlotlyViaWindowModule
+    PlotlyViaWindowModule,
+    RouterModule.forRoot([])
   ],
   providers: [],
   bootstrap: [AppComponent]
