@@ -108,7 +108,7 @@ export class ResultsComponent implements OnInit {
           family: "Helvetica Neue, sans-serif"
         },
         title: {
-          text: 'CO&#8322; Savings',
+          text: 'CO<sub>2e</sub> Savings',
           font: {
             family: "Helvetica Neue, sans-serif",
             size: 18

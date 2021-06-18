@@ -9,14 +9,14 @@
         </tr>
 
         <tr *ngFor="let data of baselineData; let index = index;">
-            <td>Energy Use #{{index+1}}</td>
+            <td>Emission Source #{{index+1}}</td>
             <td class="text-center">{{data.totalEmissionOutput | number:'1.1-1'}} tonne CO<sub>2</sub></td>
         </tr>
         <tr *ngIf="modificationData && modificationData.length != 0">
             <td class="bold" colspan="2">Modification Summary</td>
         </tr>
         <tr *ngFor="let data of modificationData; let index = index;">
-            <td>Energy Use #{{index+1}}</td>
+            <td>Emission Source #{{index+1}}</td>
             <td class="text-center">{{data.totalEmissionOutput | number:'1.1-1'}} tonne CO<sub>2</sub></td>
         </tr>
         <tr>

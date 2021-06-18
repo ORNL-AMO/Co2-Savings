@@ -8,13 +8,13 @@
     </div>
     <div class="p-2 text-right" *ngIf="formData">
         <a class="click-link small" (click)="addEnergyUse()">
-            +Add Energy Use
+            +Add Emission Source
         </a>
     </div>
 
     <div class="p-2" *ngFor="let data of formData; let index = index;">
         <label class="group-label">
-            Energy Use #{{index+1}}
+            Emission Source #{{index+1}}
             <span *ngIf="formData.length != 1 || !isBaseline" class="click-link small danger"
                 (click)="removeItem(index)">Delete</span>
         </label>
