@@ -1,7 +1,7 @@
 <form [ngClass]="{'disabled': !selected}">
     <div class="form-section">
         <div class="form-group">
-            <label for="{{'energyType'+modId+index}}">Energy Type</label>
+            <label for="{{'energyType'+modId+index}}">Emission Source Type</label>
             <div class="input-group">
                 <select name="{{'energyType'+modId+index}}" class="form-control" id="{{'energyType'+modId+index}}"
                     [(ngModel)]="data.energyType" (change)="changeEnergyType()" [required]="true"
@@ -15,7 +15,7 @@
 
     <div class="form-section" *ngIf="data.energyType == 'fuel'">
         <div class="form-group">
-            <label for="{{'energySource'+modId+index}}">Energy Source</label>
+            <label for="{{'energySource'+modId+index}}">Emission Source</label>
             <div class="input-group">
                 <select name="{{'energySource'+modId+index}}" class="form-control" id="{{'energySource'+modId+index}}"
                     [(ngModel)]="data.energySource" (change)="setFuelOptions()" [required]="true"
