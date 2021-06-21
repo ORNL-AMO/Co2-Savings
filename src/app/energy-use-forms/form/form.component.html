@@ -67,6 +67,20 @@
         </div>
     </div>
 
+    <div class="form-section" *ngIf="data.energyType == 'electricity'">
+        <div class="form-group">
+            <label for="{{'eGridSubregion'+modId+index}}">eGrid Subregion</label>
+            <div class="input-group">
+                <select name="{{'eGridSubregion'+modId+index}}" class="form-control"
+                    id="{{'eGridSubregion'+modId+index}}" [(ngModel)]="data.eGridSubregion" (change)="setSubRegion()"
+                    [required]="true" [disabled]="!selected">
+                    <option *ngFor="let option of subregions" [ngValue]="option.subregion">{{option.subregion}}
+                    </option>
+                </select>
+            </div>
+        </div>
+    </div>
+
     <div class="form-section" *ngIf="data.energyType == 'fugitive'">
         <div class="form-group">
             <label for="{{''+modId+index}}">Fugitive Type</label>
