@@ -101,4 +101,8 @@ export interface Co2SavingsData {
   eGridRegion?: string;
   eGridSubregion?: string;
   totalEmissionOutput: number;
+  customUnits?: string;
+  carbonFactor?: number;
+  methaneFactor?: number;
+  nitrousFactor?: number;
 }

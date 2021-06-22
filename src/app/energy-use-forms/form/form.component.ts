@@ -4,6 +4,7 @@ import { Co2SavingsData, Co2SavingsService } from 'src/app/co2-savings.service';
 import { FuelTypeProperties, OtherFuel, otherFuels } from 'src/app/co2FuelSavingsFuels';
 import { FugitiveTypeProperties, Fugitive, fugitives } from 'src/app/co2FugitiveSavings';
 import { eGridRegion, electricityGridRegions, SubRegionData } from 'src/app/electricityGridRegions';
+import { customEmissions, Custom, CustomTypeProperties } from 'src/app/co2CustomSavings';
 
 @Component({
   selector: 'app-form',
@@ -23,9 +24,11 @@ export class FormComponent implements OnInit {
   modId: string;
   otherFuels: Array<OtherFuel>;
   fugitives: Array<Fugitive>;
+  customEmissions: Array<Custom>;
   eGridRegions: Array<eGridRegion>;
   fuelOptions: Array<FuelTypeProperties>;
   fugitiveOptions: Array<FugitiveTypeProperties>;
+  customOptions: CustomTypeProperties;
   subregions: Array<SubRegionData>;
   isFormChange: boolean = false;
   energyUnitsSub: Subscription;
@@ -38,6 +41,7 @@ export class FormComponent implements OnInit {
     })
     this.otherFuels = otherFuels;
     this.fugitives = fugitives;
+    this.customEmissions = customEmissions;
     this.eGridRegions = electricityGridRegions;
     if (this.isBaseline) {
       this.modId = '_baseline_';
@@ -75,6 +79,11 @@ export class FormComponent implements OnInit {
     if (tmpFugitive) {
       this.fugitiveOptions = tmpFugitive.fugitiveTypes;
     }
+
+    let tmpCustom: Custom = this.customEmissions.find((val) => { return this.data.energySource === val.energySource});
+    if (tmpCustom) {
+      this.customOptions = tmpCustom.customType;
+    }
     let tmpRegion: eGridRegion = this.eGridRegions.find((val) => { return this.data.eGridRegion === val.region; });
     if (tmpRegion) {
       this.subregions = tmpRegion.subregions;
@@ -88,7 +97,22 @@ export class FormComponent implements OnInit {
     this.data.totalEmissionOutputRate = undefined;
     this.data.fuelType = undefined;
     this.data.energySource = undefined;
+    this.data.methaneFactor = undefined;
+    this.data.nitrousFactor = undefined;
     this.save();
+  }
+
+  setCustomOptions() {
+    let tmpCustom: Custom = this.customEmissions.find((val) => { return this.data.energySource === val.energySource});
+    this.customOptions = tmpCustom.customType;
+    if (this.data.energySource == 'Fugitive') {
+      this.data.totalEmissionOutputRate = this.customOptions.warmingPotential;
+    }
+
+    else {
+      this.data.totalEmissionOutputRate = this.customOptions.carbonFactor;
+    }
+    this.data.customUnits = this.customOptions.unit;
   }
 
   setFugitiveOptions() {
@@ -115,6 +139,7 @@ export class FormComponent implements OnInit {
     this.data.totalEmissionOutputRate = tmpNewFugitive.warmingPotential;
     this.save();
   }
+
 
   setRegion() {
     let tmpRegion: eGridRegion = this.eGridRegions.find((val) => { return this.data.eGridRegion === val.region; });
