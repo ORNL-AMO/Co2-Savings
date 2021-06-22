@@ -34,6 +34,11 @@ export class Co2SavingsService {
       dataCpy.totalEmissionOutputRate = dataCpy.totalEmissionOutputRate / conversionHelper;
       dataCpy.energyUse = dataCpy.energyUse * 0.947813;
     }
+    else if (data.energyType == 'fugitive') {
+      // 1 lb = 0.453592 kg
+      let conversionHelper: number = 0.453592;
+      dataCpy.totalEmissionOutputRate = dataCpy.totalEmissionOutputRate * conversionHelper;
+    }
     if (dataCpy.totalEmissionOutputRate && dataCpy.energyUse) {
       //set results on original obj
       data.totalEmissionOutput = (dataCpy.totalEmissionOutputRate) * (dataCpy.energyUse / 1000);
@@ -92,6 +97,7 @@ export interface Co2SavingsData {
   energyUse: number;
   energySource?: string;
   fuelType?: string;
+  fugitiveType?: string;
   eGridRegion?: string;
   eGridSubregion?: string;
   totalEmissionOutput: number;
