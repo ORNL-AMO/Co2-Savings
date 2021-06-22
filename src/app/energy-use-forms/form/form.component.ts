@@ -5,6 +5,7 @@ import { FuelTypeProperties, OtherFuel, otherFuels } from 'src/app/co2FuelSaving
 import { FugitiveTypeProperties, Fugitive, fugitives } from 'src/app/co2FugitiveSavings';
 import { eGridRegion, electricityGridRegions, SubRegionData } from 'src/app/electricityGridRegions';
 import { customEmissions, Custom, CustomTypeProperties } from 'src/app/co2CustomSavings';
+import { MobileEmission, MobileTypeProperties, mobileEmissions } from 'src/app/co2MobileSavings';
 
 @Component({
   selector: 'app-form',
@@ -25,21 +26,26 @@ export class FormComponent implements OnInit {
   otherFuels: Array<OtherFuel>;
   fugitives: Array<Fugitive>;
   customEmissions: Array<Custom>;
+  mobileEmissions: Array<MobileEmission>;
   eGridRegions: Array<eGridRegion>;
   fuelOptions: Array<FuelTypeProperties>;
+  mobileOptions: Array<MobileTypeProperties>;
   fugitiveOptions: Array<FugitiveTypeProperties>;
   customOptions: CustomTypeProperties;
   subregions: Array<SubRegionData>;
   isFormChange: boolean = false;
   energyUnitsSub: Subscription;
   energyUnits: string;
+  mobileUnits: string;
   constructor(private co2SavingsService: Co2SavingsService) { }
 
   ngOnInit(): void {
     this.energyUnitsSub = this.co2SavingsService.energyUnits.subscribe(val => {
       this.energyUnits = val;
     })
+    this.mobileUnits = 'gal';
     this.otherFuels = otherFuels;
+    this.mobileEmissions = mobileEmissions;
     this.fugitives = fugitives;
     this.customEmissions = customEmissions;
     this.eGridRegions = electricityGridRegions;
@@ -88,6 +94,10 @@ export class FormComponent implements OnInit {
     if (tmpRegion) {
       this.subregions = tmpRegion.subregions;
     }
+    let tmpMobile: MobileEmission = this.mobileEmissions.find((val) => { return this.data.energySource === val.energySource; });
+    if (tmpMobile) {
+      this.mobileOptions = tmpMobile.mobileTypes;
+    }
   }
 
   changeEnergyType() {
@@ -96,6 +106,7 @@ export class FormComponent implements OnInit {
     this.data.energyUse = undefined;
     this.data.totalEmissionOutputRate = undefined;
     this.data.fuelType = undefined;
+    this.data.mobileType = undefined;
     this.data.energySource = undefined;
     this.data.methaneFactor = undefined;
     this.data.nitrousFactor = undefined;
@@ -150,6 +161,24 @@ export class FormComponent implements OnInit {
   setSubRegion() {
     let tmpSubRegion: SubRegionData = this.subregions.find((val) => { return this.data.eGridSubregion === val.subregion; });
     this.data.totalEmissionOutputRate = tmpSubRegion.carbonFactor;
+    this.save();
+  }
+  setMobileOptions() {
+    let tmpMobile: MobileEmission = this.mobileEmissions.find((val) => { return this.data.energySource === val.energySource; });
+    this.mobileOptions = tmpMobile.mobileTypes;
+    if (this.data.energySource == 'Commuter Vehicles') {
+      this.mobileUnits = 'passenger-mile';
+    }
+    else if (this.data.energySource == 'Transportation')  {
+      this.mobileUnits = 'ton-mile';
+    }
+    this.data.mobileType = undefined;
+    this.data.totalEmissionOutputRate = undefined;
+  }
+  setMobile() {
+    let tmpMobile: MobileTypeProperties = this.mobileOptions.find((val) => { return this.data.mobileType === val.mobileType; });
+    this.data.totalEmissionOutputRate = tmpMobile.carbonFactor;
+    this.mobileUnits = tmpMobile.unit;
     this.save();
   }
 
