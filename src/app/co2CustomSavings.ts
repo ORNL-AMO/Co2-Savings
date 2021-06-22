@@ -52,7 +52,7 @@ export const customEmissions: Array<Custom> = [
         customType: 
             {
                 warmingPotential: 0,
-                unit: 'units'
+                unit: 'lbs'
             }
         ,
 

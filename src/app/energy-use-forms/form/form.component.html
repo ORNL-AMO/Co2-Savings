@@ -162,8 +162,8 @@
         <label for="{{'energyUse'+modId+index}}">
             <span *ngIf="data.energyType == 'fuel'">Fuel Use</span>
             <span *ngIf="data.energyType == 'electricity'">Electricity Use</span>
-            <span *ngIf="data.energyType == 'fugitive'">Gas Purchased</span>
-            <span *ngIf="data.energyType == 'custom'">Energy Use</span>
+            <span *ngIf="data.energyType == 'fugitive' || data.energySource == 'Fugitive'">Gas Purchased</span>
+            <span *ngIf="data.energyType == 'custom' && data.energySource != 'Fugitive'">Energy Use</span>
         </label>
         <div class="input-group">
             <input name="{{'energyUse'+modId+index}}" type="number" step="any" class="form-control"
