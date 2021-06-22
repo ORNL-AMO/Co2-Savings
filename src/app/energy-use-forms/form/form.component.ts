@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Co2SavingsData, Co2SavingsService } from 'src/app/co2-savings.service';
 import { FuelTypeProperties, OtherFuel, otherFuels } from 'src/app/co2FuelSavingsFuels';
+import { FugitiveTypeProperties, Fugitive, fugitives } from 'src/app/co2FugitiveSavings';
 import { eGridRegion, electricityGridRegions, SubRegionData } from 'src/app/electricityGridRegions';
 import { MobileEmission, MobileTypeProperties, mobileEmissions } from 'src/app/co2MobileSavings';
 
@@ -26,6 +27,8 @@ export class FormComponent implements OnInit {
   eGridRegions: Array<eGridRegion>;
   fuelOptions: Array<FuelTypeProperties>;
   mobileOptions: Array<MobileTypeProperties>;
+  fugitives: Array<Fugitive>;
+  fugitiveOptions: Array<FugitiveTypeProperties>;
   subregions: Array<SubRegionData>;
   isFormChange: boolean = false;
   energyUnitsSub: Subscription;
@@ -40,6 +43,7 @@ export class FormComponent implements OnInit {
     this.mobileUnits = 'gal';
     this.otherFuels = otherFuels;
     this.mobileEmissions = mobileEmissions;
+    this.fugitives = fugitives;
     this.eGridRegions = electricityGridRegions;
     if (this.isBaseline) {
       this.modId = '_baseline_';
@@ -73,6 +77,10 @@ export class FormComponent implements OnInit {
     if (tmpOtherFuel) {
       this.fuelOptions = tmpOtherFuel.fuelTypes;
     }
+    let tmpFugitive: Fugitive = this.fugitives.find((val) => { return this.data.energySource === val.energySource});
+    if (tmpFugitive) {
+      this.fugitiveOptions = tmpFugitive.fugitiveTypes;
+    }
     let tmpRegion: eGridRegion = this.eGridRegions.find((val) => { return this.data.eGridRegion === val.region; });
     if (tmpRegion) {
       this.subregions = tmpRegion.subregions;
@@ -94,6 +102,13 @@ export class FormComponent implements OnInit {
     this.save();
   }
 
+  setFugitiveOptions() {
+    let tmpFugitive: Fugitive = this.fugitives.find((val) => { return this.data.energySource === val.energySource });
+    this.fugitiveOptions = tmpFugitive.fugitiveTypes;
+    this.data.fugitiveType = undefined;
+    this.data.totalEmissionOutputRate = undefined;
+  }
+
   setFuelOptions() {
     let tmpOtherFuel: OtherFuel = this.otherFuels.find((val) => { return this.data.energySource === val.energySource; });
     this.fuelOptions = tmpOtherFuel.fuelTypes;
@@ -105,6 +120,13 @@ export class FormComponent implements OnInit {
     this.data.totalEmissionOutputRate = tmpFuel.carbonFactor;
     this.save();
   }
+
+  setFugitive() {
+    let tmpNewFugitive: FugitiveTypeProperties = this.fugitiveOptions.find((val) => { return this.data.fugitiveType === val.fugitiveType; });
+    this.data.totalEmissionOutputRate = tmpNewFugitive.warmingPotential;
+    this.save();
+  }
+
   setRegion() {
     let tmpRegion: eGridRegion = this.eGridRegions.find((val) => { return this.data.eGridRegion === val.region; });
     this.subregions = tmpRegion.subregions;
