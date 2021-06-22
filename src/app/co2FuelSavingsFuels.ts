@@ -136,6 +136,48 @@ export const otherFuels: Array<OtherFuel> = [
         ]
     },
     {
+        energySource: 'Biomass Fuels',
+        fuelTypes: [
+            {
+                fuelType: 'Biodiesel',
+                carbonFactor: 73.84,
+                methaneFactor: 1.1,
+                nitrousFactor: 0.11
+            },
+            {
+                fuelType: 'Ethanol',
+                carbonFactor: 68.44,
+                methaneFactor: 1.1,
+                nitrousFactor: 0.11
+            },
+            {
+                fuelType: 'Wood',
+                carbonFactor: 93.8,
+                methaneFactor: 7.2,
+                nitrousFactor: 3.6
+            },
+            {
+                fuelType: 'Bagasse',
+                carbonFactor: 95.5,
+                methaneFactor: 1.9,
+                nitrousFactor: 0.42
+            },
+            {
+                fuelType: 'Agricultural Byproduct',
+                carbonFactor: 118.17,
+                methaneFactor: 32,
+                nitrousFactor: 4.2
+            },
+            {
+                fuelType: 'Landfill',
+                carbonFactor: 52.07,
+                methaneFactor: 3.2,
+                nitrousFactor: 0.63
+            }
+            
+        ]
+    },
+    {
         energySource: 'Coal',
         fuelTypes: [
             {
