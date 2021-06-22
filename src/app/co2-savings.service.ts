@@ -92,6 +92,7 @@ export interface Co2SavingsData {
   energyUse: number;
   energySource?: string;
   fuelType?: string;
+  mobileType?: string;
   eGridRegion?: string;
   eGridSubregion?: string;
   totalEmissionOutput: number;

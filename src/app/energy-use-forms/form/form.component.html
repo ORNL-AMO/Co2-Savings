@@ -8,6 +8,7 @@
                     [disabled]="!selected">
                     <option [ngValue]="'fuel'">Fuel</option>
                     <option [ngValue]="'electricity'">Electricity</option>
+                    <option [ngValue]="'mobile'">Mobile Emissions</option>
                 </select>
             </div>
         </div>
@@ -27,6 +28,21 @@
         </div>
     </div>
 
+    <div class="form-section" *ngIf="data.energyType == 'mobile'">
+        <div class="form-group">
+            <label for="{{'energySource'+modId+index}}">Emission Source</label>
+            <div class="input-group">
+                <select name="{{'energySource'+modId+index}}" class="form-control" id="{{'energySource'+modId+index}}"
+                    [(ngModel)]="data.energySource" (change)="setMobileOptions()" [required]="true"
+                    [disabled]="!selected">
+                    <option *ngFor="let option of mobileEmissions" [ngValue]="option.energySource">
+                        {{option.energySource}}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+
     <div class="form-section" *ngIf="data.energyType == 'fuel'">
         <div class="form-group">
             <label for="{{'fuelType'+modId+index}}">Fuel Type</label>
@@ -34,6 +50,19 @@
                 <select name="{{'fuelType'+modId+index}}" class="form-control" id="{{'fuelType'+modId+index}}"
                     [(ngModel)]="data.fuelType" (change)="setFuel()" [required]="true" [disabled]="!selected">
                     <option *ngFor="let option of fuelOptions" [ngValue]="option.fuelType">{{option.fuelType}}
+                    </option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section" *ngIf="data.energyType == 'mobile'">
+        <div class="form-group">
+            <label for="{{'fuelType'+modId+index}}">Mobile Emission Type</label>
+            <div class="input-group">
+                <select name="{{'mobileType'+modId+index}}" class="form-control" id="{{'mobileType'+modId+index}}"
+                    [(ngModel)]="data.mobileType" (change)="setMobile()" [required]="true" [disabled]="!selected">
+                    <option *ngFor="let option of mobileOptions" [ngValue]="option.mobileType">{{option.mobileType}}
                     </option>
                 </select>
             </div>
@@ -76,21 +105,25 @@
             <span class="input-group-addon units small">kg CO<sub>2</sub>/
                 <span *ngIf="data.energyType == 'fuel'">{{energyUnits}}</span>
                 <span *ngIf="data.energyType == 'electricity'">MWh</span>
+                <span *ngIf="data.energyType == 'mobile'">{{mobileUnits}}</span>
             </span>
         </div>
     </div>
 
     <div class="form-group">
         <label for="{{'energyUse'+modId+index}}">
-            <span *ngIf="data.energyType == 'fuel'">Fuel</span>
-            <span *ngIf="data.energyType == 'electricity'">Electricity</span>
-            Use</label>
+            <span *ngIf="data.energyType == 'fuel' || (data.energyType == 'mobile' && data.energySource != 'Commuter Vehicles' && data.energySource != 'Transportation')">Fuel Use</span>
+            <span *ngIf="data.energyType == 'electricity'">Electricity Use</span>
+            <span *ngIf="data.energyType == 'mobile' && data.energySource == 'Commuter Vehicles'">Distance</span>
+            <span *ngIf="data.energyType == 'mobile' && data.energySource == 'Transportation'">Freight Hauled</span>
+        </label>
         <div class="input-group">
             <input name="{{'energyUse'+modId+index}}" type="number" step="any" class="form-control"
                 id="{{'energyUse'+modId+index}}" (input)="save()" [(ngModel)]="data.energyUse" onfocus="this.select();"
                 [required]="true" [disabled]="!selected">
             <span class="input-group-addon units" *ngIf="data.energyType == 'fuel'">{{energyUnits}}</span>
             <span class="input-group-addon units" *ngIf="data.energyType == 'electricity'">MWh</span>
+            <span class="input-group-addon units" *ngIf="data.energyType == 'mobile'">{{mobileUnits}}</span>
         </div>
     </div>
 </form>
