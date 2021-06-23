@@ -19,6 +19,24 @@ export class ResultsComponent implements OnInit {
   baselineTotal: number;
   modificationTotal: number;
   energyUnitsSub: Subscription;
+
+  graphColors: Array<string> = [
+    '#1E7640',
+    '#2ABDDA',
+    '#84B641',
+    '#7030A0',
+    '#E1CD00',
+    '#306DBE',
+    '#A03123',
+    '#7FD7E9',
+    '#DE762D',
+    '#948A54',
+    '#A9D58B',
+    '#FFE166',
+    '#DD7164',
+    '#3f4a7d'
+  ];
+
   constructor(private co2SavingsService: Co2SavingsService, private plotlyService: PlotlyService) { }
 
   ngOnInit(): void {
@@ -69,39 +87,34 @@ export class ResultsComponent implements OnInit {
 
   drawChart() {
     if (this.gaugeChart) {
-      let data = [
-        {
-          name: "Baseline",
-          type: "bar",
-          x: this.baselineData.map((data, index) => { return "Energy Use #" + (index + 1) }),
-          y: this.baselineData.map(data => { return data.totalEmissionOutput }),
-          marker: {
-            color: '#BF3D00'
-          }
-        },
-      ]
-      if (this.modificationData) {
+      let data = new Array();
+      let numberOfSources: number = 0;
+      if (!this.modificationData || this.modificationData.length < this.baselineData.length) {
+        numberOfSources = this.baselineData.length;
+      } else {
+        numberOfSources = this.modificationData.length;
+      }
+
+      for (let index = 0; index < numberOfSources; index++) {
+        let baselineEmissionOutput: number = 0;
+        let modificationEmissionOutput: number = 0;
+        if (this.baselineData[index]) {
+          baselineEmissionOutput = this.baselineData[index].totalEmissionOutput
+        }
+        if (this.modificationData && this.modificationData[index]) {
+          modificationEmissionOutput = this.modificationData[index].totalEmissionOutput;
+        }
         data.push(
           {
-            name: "Modification",
+            name: "Emissions Source #" + (index + 1),
             type: "bar",
-            x: this.modificationData.map((data, index) => { return "Energy Use #" + (index + 1) }),
-            y: this.modificationData.map(data => { return data.totalEmissionOutput }),
+            x: ["Baseline", "Modification"],
+            y: [baselineEmissionOutput, modificationEmissionOutput],
             marker: {
-              color: '#145A32'
+              color: this.graphColors[index]
             }
           })
       }
-
-      if(this.baselineData.length > 1 || (this.modificationData && this.modificationData.length > 1)){
-        data[0].x.unshift("Total");
-        data[0].y.unshift(this.baselineTotal);
-        if(this.modificationData){
-          data[1].x.unshift("Total");
-          data[1].y.unshift(this.modificationTotal);
-        };
-      }
-
 
       var layout = {
         font: {
@@ -127,7 +140,8 @@ export class ResultsComponent implements OnInit {
         },
         legend: {
           orientation: 'h'
-        }
+        },
+        barmode: 'stack'
       };
       let config = {
         displaylogo: false,
