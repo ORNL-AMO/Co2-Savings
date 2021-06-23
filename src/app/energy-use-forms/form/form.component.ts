@@ -37,6 +37,9 @@ export class FormComponent implements OnInit {
   energyUnitsSub: Subscription;
   energyUnits: string;
   mobileUnits: string;
+  carbonEmissions: number = 0;
+  methaneEmissions: number = 0;
+  nitrousEmissions: number = 0;
   constructor(private co2SavingsService: Co2SavingsService) { }
 
   ngOnInit(): void {
@@ -74,6 +77,7 @@ export class FormComponent implements OnInit {
 
   ngOnDestroy() {
     this.dataSub.unsubscribe();
+    this.energyUnitsSub.unsubscribe();
   }
 
   initOptions() {
@@ -110,6 +114,9 @@ export class FormComponent implements OnInit {
     this.data.energySource = undefined;
     this.data.methaneFactor = undefined;
     this.data.nitrousFactor = undefined;
+    this.carbonEmissions = 0;
+    this.methaneEmissions = 0;
+    this.nitrousEmissions = 0;
     this.save();
   }
 
@@ -136,12 +143,18 @@ export class FormComponent implements OnInit {
   setFuelOptions() {
     let tmpOtherFuel: OtherFuel = this.otherFuels.find((val) => { return this.data.energySource === val.energySource; });
     this.fuelOptions = tmpOtherFuel.fuelTypes;
+    this.carbonEmissions = 0;
+    this.methaneEmissions = 0;
+    this.nitrousEmissions = 0;
     this.data.fuelType = undefined;
     this.data.totalEmissionOutputRate = undefined;
   }
   setFuel() {
     let tmpFuel: FuelTypeProperties = this.fuelOptions.find((val) => { return this.data.fuelType === val.fuelType; });
     this.data.totalEmissionOutputRate = tmpFuel.carbonFactor;
+    this.carbonEmissions = tmpFuel.carbonFactor;
+    this.methaneEmissions = tmpFuel.methaneFactor;
+    this.nitrousEmissions = tmpFuel.nitrousFactor;
     this.save();
   }
 
@@ -155,12 +168,18 @@ export class FormComponent implements OnInit {
   setRegion() {
     let tmpRegion: eGridRegion = this.eGridRegions.find((val) => { return this.data.eGridRegion === val.region; });
     this.subregions = tmpRegion.subregions;
+    this.carbonEmissions = 0;
+    this.methaneEmissions = 0;
+    this.nitrousEmissions = 0;
     this.data.eGridSubregion = undefined;
     this.data.totalEmissionOutputRate = undefined;
   }
   setSubRegion() {
     let tmpSubRegion: SubRegionData = this.subregions.find((val) => { return this.data.eGridSubregion === val.subregion; });
     this.data.totalEmissionOutputRate = tmpSubRegion.carbonFactor;
+    this.carbonEmissions = tmpSubRegion.carbonFactor;
+    this.methaneEmissions = tmpSubRegion.methaneFactor;
+    this.nitrousEmissions = tmpSubRegion.nitrousFactor;
     this.save();
   }
   setMobileOptions() {
@@ -174,10 +193,16 @@ export class FormComponent implements OnInit {
     }
     this.data.mobileType = undefined;
     this.data.totalEmissionOutputRate = undefined;
+    this.carbonEmissions = 0;
+    this.methaneEmissions = 0;
+    this.nitrousEmissions = 0;
   }
   setMobile() {
     let tmpMobile: MobileTypeProperties = this.mobileOptions.find((val) => { return this.data.mobileType === val.mobileType; });
     this.data.totalEmissionOutputRate = tmpMobile.carbonFactor;
+    this.carbonEmissions = tmpMobile.carbonFactor;
+    this.methaneEmissions = tmpMobile.methaneFactor;
+    this.nitrousEmissions = tmpMobile.nitrousFactor;
     this.mobileUnits = tmpMobile.unit;
     this.save();
   }
