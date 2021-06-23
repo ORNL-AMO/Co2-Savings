@@ -21,7 +21,7 @@ export class AppComponent {
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
-      this.resizeTabs();
+      this.setContainerSize();
   }
   headerHeight: number;
   baselineSelected: boolean = true;
@@ -38,8 +38,11 @@ export class AppComponent {
   )}
 
   ngOnInit() {
+  }
+
+  ngAfterViewInit(){
     setTimeout(() => {
-      this.resizeTabs();
+      this.setContainerSize();
     }, 10);
   }
 
@@ -48,7 +51,7 @@ export class AppComponent {
     this.tabSelect = str;
   }
 
-  resizeTabs() {
+  setContainerSize() {
     if (this.contentContainer) {
       this.containerHeight = this.contentContainer.nativeElement.offsetHeight - this.bannerElement.nativeElement.offsetHeight;
     }
