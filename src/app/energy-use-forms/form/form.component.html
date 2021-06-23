@@ -58,7 +58,7 @@
             </div>
         </div>
     </div>
-        
+
     <div class="form-section" *ngIf="data.energyType == 'mobile'">
         <div class="form-group">
             <label for="{{'energySource'+modId+index}}">Emission Source</label>
@@ -130,10 +130,10 @@
         <div class="form-group">
             <label for="{{''+modId+index}}">Fugitive Type</label>
             <div class="input-group">
-                <select name="{{'fugitiveType'+modId+index}}" class="form-control"
-                    id="{{'fugitiveType'+modId+index}}" [(ngModel)]="data.fugitiveType" (change)="setFugitive()"
-                    [required]="true" [disabled]="!selected">
-                    <option *ngFor="let option of fugitiveOptions" [ngValue]="option.fugitiveType">{{option.fugitiveType}}
+                <select name="{{'fugitiveType'+modId+index}}" class="form-control" id="{{'fugitiveType'+modId+index}}"
+                    [(ngModel)]="data.fugitiveType" (change)="setFugitive()" [required]="true" [disabled]="!selected">
+                    <option *ngFor="let option of fugitiveOptions" [ngValue]="option.fugitiveType">
+                        {{option.fugitiveType}}
                     </option>
                 </select>
             </div>
@@ -141,14 +141,18 @@
     </div>
 
     <div class="form-group" *ngIf="data.energyType != 'custom' || data.energySource == 'Fugitive'">
-        <label for="{{'totalEmissionOutputRate'+modId+index}}" *ngIf="data.energyType != 'fugitive' && data.energyType != 'custom'">Total Emission Output Rate</label>
-        <label for="{{'totalEmissionOutputRate'+modId+index}}" *ngIf="data.energyType == 'fugitive' || (data.energyType == 'custom' && data.energySource == 'Fugitive')">Global Warming Potential</label>
+        <label for="{{'totalEmissionOutputRate'+modId+index}}"
+            *ngIf="data.energyType != 'fugitive' && data.energyType != 'custom'">Total Emission Output Rate</label>
+        <label for="{{'totalEmissionOutputRate'+modId+index}}"
+            *ngIf="data.energyType == 'fugitive' || (data.energyType == 'custom' && data.energySource == 'Fugitive')">Global
+            Warming Potential</label>
         <div class="input-group">
             <input name="{{'totalEmissionOutputRate'+modId+index}}" type="number" step="any" class="form-control"
                 id="{{'totalEmissionOutputRate'+modId+index}}" (input)="save()"
                 [(ngModel)]="data.totalEmissionOutputRate" onfocus="this.select();" [required]="true"
                 [disabled]="!selected">
-            <span class="input-group-addon units small" *ngIf="data.energyType != 'fugitive' && data.energyType != 'custom'">kg CO<sub>2</sub>/
+            <span class="input-group-addon units small"
+                *ngIf="data.energyType != 'fugitive' && data.energyType != 'custom'">kg CO<sub>2</sub>/
                 <span *ngIf="data.energyType == 'fuel'">{{energyUnits}}</span>
                 <span *ngIf="data.energyType == 'electricity'">MWh</span>
                 <span *ngIf="data.energyType == 'mobile'">{{mobileUnits}}</span>
@@ -160,28 +164,29 @@
         <label for="{{'carbonOutput'+modId+index}}">CO<sub>2</sub> Emissions</label>
         <div class="input-group">
             <input name="{{'carbonOutput'+modId+index}}" type="number" step="any" class="form-control"
-                id="{{'carbonOutput'+modId+index}}" (input)="save()"
-                [(ngModel)]="data.totalEmissionOutputRate" onfocus="this.select();" [required]="true"
-                [disabled]="!selected">
+                id="{{'carbonOutput'+modId+index}}" (input)="save()" [(ngModel)]="data.totalEmissionOutputRate"
+                onfocus="this.select();" [required]="true" [disabled]="!selected">
             <span class="input-group-addon units small" *ngIf="data.energyType != 'fugitive'">kg CO<sub>2</sub>/
                 <span>{{data.customUnits}}</span>
             </span>
         </div>
+    </div>
+    <div class="form-group" *ngIf="data.energyType=='custom' && data.energySource != 'Fugitive'">
         <label for="{{'methaneOutput'+modId+index}}">CH<sub>4</sub> Emissions</label>
         <div class="input-group">
             <input name="{{'methaneOutput'+modId+index}}" type="number" step="any" class="form-control"
-                id="{{'methaneOutput'+modId+index}}" (input)="save()"
-                onfocus="this.select();" [required]="true"
+                id="{{'methaneOutput'+modId+index}}" (input)="save()" onfocus="this.select();" [required]="true"
                 [(ngModel)]="data.methaneFactor" [disabled]="!selected">
             <span class="input-group-addon units small" *ngIf="data.energyType != 'fugitive'">g CH<sub>4</sub>/
                 <span>{{data.customUnits}}</span>
             </span>
         </div>
+    </div>
+    <div class="form-group" *ngIf="data.energyType=='custom' && data.energySource != 'Fugitive'">
         <label for="{{'nitrousOutput'+modId+index}}">N<sub>2</sub>O Emissions</label>
         <div class="input-group">
             <input name="{{'nitrousOutput'+modId+index}}" type="number" step="any" class="form-control"
-                id="{{'nitrousOutput'+modId+index}}" (input)="save()"
-                onfocus="this.select();" [required]="true"
+                id="{{'nitrousOutput'+modId+index}}" (input)="save()" onfocus="this.select();" [required]="true"
                 [(ngModel)]="data.nitrousFactor" [disabled]="!selected">
             <span class="input-group-addon units small" *ngIf="data.energyType != 'fugitive'">g N<sub>2</sub>O/
                 <span>{{data.customUnits}}</span>
@@ -191,7 +196,9 @@
 
     <div class="form-group">
         <label for="{{'energyUse'+modId+index}}">
-            <span *ngIf="data.energyType == 'fuel' || (data.energyType == 'mobile' && data.energySource != 'Commuter Vehicles' && data.energySource != 'Transportation')">Fuel Use</span>
+            <span
+                *ngIf="data.energyType == 'fuel' || (data.energyType == 'mobile' && data.energySource != 'Commuter Vehicles' && data.energySource != 'Transportation')">Fuel
+                Use</span>
             <span *ngIf="data.energyType == 'electricity'">Electricity Use</span>
             <span *ngIf="data.energyType == 'fugitive' || data.energySource == 'Fugitive'">Gas Purchased</span>
             <span *ngIf="data.energyType == 'custom' && data.energySource != 'Fugitive'">Energy Use</span>
@@ -208,5 +215,29 @@
             <span class="input-group-addon units" *ngIf="data.energyType == 'fugitive'">lbs</span>
             <span class="input-group-addon units" *ngIf="data.energyType == 'custom'">{{data.customUnits}}</span>
         </div>
+    </div>
+    <div *ngIf="data.energyType != 'custom' && data.energyType != 'fugitive'" class="d-flex w-100">
+        <label class="w-50">
+            Carbon Emissions
+        </label>
+        <label class="w-50 text-center">
+            {{carbonEmissions | number:"0.0-2"}} kg CO<sub>2</sub>/MMBtu
+        </label>
+    </div>
+    <div *ngIf="data.energyType != 'custom' && data.energyType != 'fugitive'" class="d-flex w-100">
+        <label class="w-50">
+            Methane Emissions
+        </label>
+        <label class="w-50 text-center">
+            {{methaneEmissions | number:"0.0-2"}} g CH<sub>4</sub>/MMBtu
+        </label>
+    </div>
+    <div *ngIf="data.energyType != 'custom' && data.energyType != 'fugitive'" class="d-flex w-100">
+        <label class="w-50">
+            Nitrous Oxide Emissions
+        </label>
+        <label class="w-50 text-center">
+            {{nitrousEmissions | number:"0.0-2"}} g NO<sub>2</sub>/MMBtu
+        </label>
     </div>
 </form>
