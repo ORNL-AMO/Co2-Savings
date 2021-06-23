@@ -84,6 +84,13 @@ export class FormComponent implements OnInit {
     let tmpOtherFuel: OtherFuel = this.otherFuels.find((val) => { return this.data.energySource === val.energySource; });
     if (tmpOtherFuel) {
       this.fuelOptions = tmpOtherFuel.fuelTypes;
+      let selectedOption: FuelTypeProperties =  this.fuelOptions.find(option => { return this.data.fuelType == option.fuelType});
+      if(selectedOption){
+        this.methaneEmissions = selectedOption.methaneFactor;
+        this.carbonEmissions = selectedOption.carbonFactor;
+        this.methaneEmissions = selectedOption.methaneFactor;
+        this.nitrousEmissions = selectedOption.nitrousFactor;
+      }
     }
     let tmpFugitive: Fugitive = this.fugitives.find((val) => { return this.data.energySource === val.energySource});
     if (tmpFugitive) {
@@ -97,10 +104,24 @@ export class FormComponent implements OnInit {
     let tmpRegion: eGridRegion = this.eGridRegions.find((val) => { return this.data.eGridRegion === val.region; });
     if (tmpRegion) {
       this.subregions = tmpRegion.subregions;
+      let selectedOption: SubRegionData =  this.subregions.find(option => { return this.data.eGridRegion == option.subregion});
+      if(selectedOption){
+        this.methaneEmissions = selectedOption.methaneFactor;
+        this.carbonEmissions = selectedOption.carbonFactor;
+        this.methaneEmissions = selectedOption.methaneFactor;
+        this.nitrousEmissions = selectedOption.nitrousFactor;
+      }
     }
     let tmpMobile: MobileEmission = this.mobileEmissions.find((val) => { return this.data.energySource === val.energySource; });
     if (tmpMobile) {
       this.mobileOptions = tmpMobile.mobileTypes;
+      let selectedOption: MobileTypeProperties =  this.mobileOptions.find(option => { return this.data.mobileType == option.mobileType});
+      if(selectedOption){
+        this.methaneEmissions = selectedOption.methaneFactor;
+        this.carbonEmissions = selectedOption.carbonFactor;
+        this.methaneEmissions = selectedOption.methaneFactor;
+        this.nitrousEmissions = selectedOption.nitrousFactor;
+      }
     }
   }
 
@@ -131,6 +152,7 @@ export class FormComponent implements OnInit {
       this.data.totalEmissionOutputRate = this.customOptions.carbonFactor;
     }
     this.data.customUnits = this.customOptions.unit;
+    this.save();
   }
 
   setFugitiveOptions() {
@@ -138,6 +160,7 @@ export class FormComponent implements OnInit {
     this.fugitiveOptions = tmpFugitive.fugitiveTypes;
     this.data.fugitiveType = undefined;
     this.data.totalEmissionOutputRate = undefined;
+    this.save();
   }
 
   setFuelOptions() {
@@ -148,6 +171,7 @@ export class FormComponent implements OnInit {
     this.nitrousEmissions = 0;
     this.data.fuelType = undefined;
     this.data.totalEmissionOutputRate = undefined;
+    this.save();
   }
   setFuel() {
     let tmpFuel: FuelTypeProperties = this.fuelOptions.find((val) => { return this.data.fuelType === val.fuelType; });
@@ -173,6 +197,7 @@ export class FormComponent implements OnInit {
     this.nitrousEmissions = 0;
     this.data.eGridSubregion = undefined;
     this.data.totalEmissionOutputRate = undefined;
+    this.save();
   }
   setSubRegion() {
     let tmpSubRegion: SubRegionData = this.subregions.find((val) => { return this.data.eGridSubregion === val.subregion; });
@@ -196,6 +221,7 @@ export class FormComponent implements OnInit {
     this.carbonEmissions = 0;
     this.methaneEmissions = 0;
     this.nitrousEmissions = 0;
+    this.save();
   }
   setMobile() {
     let tmpMobile: MobileTypeProperties = this.mobileOptions.find((val) => { return this.data.mobileType === val.mobileType; });
