@@ -14,7 +14,7 @@ export interface MobileTypeProperties {
 
 export const mobileEmissions: Array<MobileEmission> = [
     {
-        energySource: 'Personal Vehicles',
+        energySource: 'Known Fuel',
         mobileTypes: [
             {
                 mobileType: 'Motor Gasoline',
@@ -76,7 +76,7 @@ export const mobileEmissions: Array<MobileEmission> = [
 
     },
     {
-        energySource: 'Commuter Vehicles',
+        energySource: 'Known Distance',
         mobileTypes: [
             {
                 mobileType: 'Passenger Car',
@@ -173,14 +173,14 @@ export const mobileEmissions: Array<MobileEmission> = [
                 nitrousFactor: 0.0052,
                 imperialUnit: 'passenger-mile',
                 metricUnit: 'passenger-km'
-            }
-        ]
-    },
-    {
-        energySource: 'Freight',
-        mobileTypes: [
+            },
+            //     ]
+            // },
+            // {
+            //     energySource: 'Freight',
+            //     mobileTypes: [
             {
-                mobileType: 'Medium and Heavy-Duty Truck',
+                mobileType: 'Medium and Heavy-Duty Freight Truck',
                 carbonFactor: 0.207,
                 methaneFactor: 0.002,
                 nitrousFactor: 0.0046,
@@ -188,7 +188,7 @@ export const mobileEmissions: Array<MobileEmission> = [
                 metricUnit: 'tonne-km'
             },
             {
-                mobileType: 'Rail',
+                mobileType: 'Freight Rail',
                 carbonFactor: 0.021,
                 methaneFactor: 0.0017,
                 nitrousFactor: 0.0005,
@@ -196,7 +196,7 @@ export const mobileEmissions: Array<MobileEmission> = [
                 metricUnit: 'tonne-km'
             },
             {
-                mobileType: 'Waterborne Craft',
+                mobileType: 'Waterborne Freight Craft',
                 carbonFactor: 0.04,
                 methaneFactor: 0.0122,
                 nitrousFactor: 0.0017,
@@ -204,7 +204,7 @@ export const mobileEmissions: Array<MobileEmission> = [
                 metricUnit: 'tonne-km'
             },
             {
-                mobileType: 'Aircraft',
+                mobileType: 'Freight Aircraft',
                 carbonFactor: 1.265,
                 methaneFactor: 0,
                 nitrousFactor: 0.0389,

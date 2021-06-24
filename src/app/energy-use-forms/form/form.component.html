@@ -91,10 +91,25 @@
         <div class="form-group">
             <label for="{{'fuelType'+modId+index}}">Mobile Emission Type</label>
             <div class="input-group">
-                <select name="{{'mobileType'+modId+index}}" class="form-control" id="{{'mobileType'+modId+index}}"
-                    [(ngModel)]="data.mobileType" (change)="setMobile()" [required]="true" [disabled]="!selected">
+                <select *ngIf="data.energySource != 'Known Distance'" name="{{'mobileType'+modId+index}}"
+                    class="form-control" id="{{'mobileType'+modId+index}}" [(ngModel)]="data.mobileType"
+                    (change)="setMobile()" [required]="true" [disabled]="!selected">
                     <option *ngFor="let option of mobileOptions" [ngValue]="option.mobileType">{{option.mobileType}}
                     </option>
+                </select>
+                <select *ngIf="data.energySource == 'Known Distance'" name="{{'mobileType'+modId+index}}"
+                    class="form-control" id="{{'mobileType'+modId+index}}" [(ngModel)]="data.mobileType"
+                    (change)="setMobile()" [required]="true" [disabled]="!selected">
+                    <optgroup label="Commuter">
+                        <option *ngFor="let option of mobileOptions | slice:0:12" [ngValue]="option.mobileType">
+                            {{option.mobileType}}
+                        </option>
+                    </optgroup>
+                    <optgroup label="Freight">
+                        <option *ngFor="let option of mobileOptions | slice:12:16" [ngValue]="option.mobileType">
+                            {{option.mobileType}}
+                        </option>
+                    </optgroup>
                 </select>
             </div>
         </div>
@@ -188,13 +203,12 @@
     <div class="form-group">
         <label for="{{'energyUse'+modId+index}}">
             <span
-                *ngIf="data.energyType == 'fuel' || (data.energyType == 'mobile' && data.energySource != 'Commuter Vehicles' && data.energySource != 'Transportation')">Fuel
+                *ngIf="data.energyType == 'fuel' || (data.energyType == 'mobile' && data.energySource != 'Known Distance')">Fuel
                 Use</span>
             <span *ngIf="data.energyType == 'electricity'">Electricity Use</span>
             <span *ngIf="data.energyType == 'fugitive' || data.energySource == 'Fugitive'">Gas Purchased</span>
             <span *ngIf="data.energyType == 'custom' && data.energySource != 'Fugitive'">Energy Use</span>
-            <span *ngIf="data.energyType == 'mobile' && data.energySource == 'Commuter Vehicles'">Distance</span>
-            <span *ngIf="data.energyType == 'mobile' && data.energySource == 'Transportation'">Freight Hauled</span>
+            <span *ngIf="data.energyType == 'mobile' && data.energySource == 'Known Distance'">Distance</span>
         </label>
         <div class="input-group">
             <input name="{{'energyUse'+modId+index}}" type="number" step="any" class="form-control"
