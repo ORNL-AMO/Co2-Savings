@@ -157,7 +157,7 @@ export const otherFuels: Array<OtherFuel> = [
                 nitrousFactor: 3.6
             },
             {
-                fuelType: 'Bagasse',
+                fuelType: 'Bagasse Pulping Liquor',
                 carbonFactor: 95.5,
                 methaneFactor: 1.9,
                 nitrousFactor: 0.42
@@ -169,7 +169,7 @@ export const otherFuels: Array<OtherFuel> = [
                 nitrousFactor: 4.2
             },
             {
-                fuelType: 'Landfill',
+                fuelType: 'Landfill Gas',
                 carbonFactor: 52.07,
                 methaneFactor: 3.2,
                 nitrousFactor: 0.63
