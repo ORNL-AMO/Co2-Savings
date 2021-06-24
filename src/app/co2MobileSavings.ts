@@ -14,7 +14,7 @@ export interface MobileTypeProperties {
 
 export const mobileEmissions: Array<MobileEmission> = [
     {
-        energySource: 'Personal Vehicles',
+        energySource: 'Known Fuel',
         mobileTypes: [
             {
                 mobileType: 'Motor Gasoline',
@@ -76,7 +76,7 @@ export const mobileEmissions: Array<MobileEmission> = [
 
     },
     {
-        energySource: 'Commuter Vehicles',
+        energySource: 'Known Distance',
         mobileTypes: [
             {
                 mobileType: 'Passenger Car',
@@ -173,12 +173,12 @@ export const mobileEmissions: Array<MobileEmission> = [
                 nitrousFactor: 0.0052,
                 imperialUnit: 'passenger-mile',
                 metricUnit: 'passenger-km'
-            }
-        ]
-    },
-    {
-        energySource: 'Freight',
-        mobileTypes: [
+            },
+            //     ]
+            // },
+            // {
+            //     energySource: 'Freight',
+            //     mobileTypes: [
             {
                 mobileType: 'Medium and Heavy-Duty Truck',
                 carbonFactor: 0.207,
