@@ -221,7 +221,7 @@
             Carbon Emissions
         </label>
         <label class="w-50 text-center">
-            {{carbonEmissions | number:"0.0-2"}} kg CO<sub>2</sub>/MMBtu
+            {{data.carbonFactor | number:"0.0-2"}} kg CO<sub>2</sub>/MMBtu
         </label>
     </div>
     <div *ngIf="data.energyType != 'custom' && data.energyType != 'fugitive'" class="d-flex w-100">
@@ -229,7 +229,7 @@
             Methane Emissions
         </label>
         <label class="w-50 text-center">
-            {{methaneEmissions | number:"0.0-2"}} g CH<sub>4</sub>/MMBtu
+            {{data.methaneFactor | number:"0.0-2"}} g CH<sub>4</sub>/MMBtu
         </label>
     </div>
     <div *ngIf="data.energyType != 'custom' && data.energyType != 'fugitive'" class="d-flex w-100">
@@ -237,7 +237,7 @@
             Nitrous Oxide Emissions
         </label>
         <label class="w-50 text-center">
-            {{nitrousEmissions | number:"0.0-2"}} g NO<sub>2</sub>/MMBtu
+            {{data.nitrousFactor | number:"0.0-2"}} g NO<sub>2</sub>/MMBtu
         </label>
     </div>
 </form>

@@ -118,7 +118,7 @@ export class ResultsComponent implements OnInit {
         },
         yaxis: {
           title: {
-            text: 'tonne CO<sub>2</sub>',
+            text: 'tonne CO<sub>2e</sub>',
             font: {
               family: "Helvetica Neue, sans-serif",
               size: 18
