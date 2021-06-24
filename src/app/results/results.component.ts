@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { PlotlyService } from 'angular-plotly.js';
 import { Subscription } from 'rxjs';
 import { Co2SavingsData, Co2SavingsService } from '../co2-savings.service';
@@ -37,7 +37,7 @@ export class ResultsComponent implements OnInit {
     '#3f4a7d'
   ];
 
-  constructor(private co2SavingsService: Co2SavingsService, private plotlyService: PlotlyService) { }
+  constructor(private co2SavingsService: Co2SavingsService, private plotlyService: PlotlyService, private cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.energyUnitsSub = this.co2SavingsService.energyUnits.subscribe(val => {
@@ -46,12 +46,14 @@ export class ResultsComponent implements OnInit {
     this.baselineDataSub = this.co2SavingsService.baselineData.subscribe(val => {
       this.baselineData = this.setResults(val);
       this.baselineTotal = this.getTotal(this.baselineData);
+      this.cd.detectChanges();
       this.drawChart();
     });
 
     this.modificationDataSub = this.co2SavingsService.modificationData.subscribe(val => {
       this.modificationData = this.setResults(val);
       this.modificationTotal = this.getTotal(this.modificationData);
+      this.cd.detectChanges();
       this.drawChart();
     });
   }

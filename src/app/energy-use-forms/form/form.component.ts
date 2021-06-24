@@ -61,8 +61,14 @@ export class FormComponent implements OnInit {
       this.modId = '_baseline_';
       this.dataSub = this.co2SavingsService.baselineData.subscribe(val => {
         if (this.isFormChange == false && val && val[this.index]) {
+          let currentEnergySource: string;
+          if (this.data) {
+            currentEnergySource = this.data.energySource;
+          }
           this.data = val[this.index];
-          this.initOptions();
+          if (val[this.index].energySource != currentEnergySource) {
+            this.initOptions();
+          }
         } else {
           this.isFormChange = false;
         }
@@ -71,8 +77,14 @@ export class FormComponent implements OnInit {
       this.modId = '_modification_';
       this.dataSub = this.co2SavingsService.modificationData.subscribe(val => {
         if (this.isFormChange == false && val && val[this.index]) {
+          let currentEnergySource: string;
+          if (this.data) {
+            currentEnergySource = this.data.energySource;
+          }
           this.data = val[this.index];
-          this.initOptions();
+          if (val[this.index].energySource != currentEnergySource) {
+            this.initOptions();
+          }
         } else {
           this.isFormChange = false;
         }
