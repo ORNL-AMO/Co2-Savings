@@ -144,6 +144,7 @@ export class FormComponent implements OnInit {
       this.data.totalEmissionOutputRate = this.customOptions.carbonFactor;
     }
     this.data.customUnits = this.customOptions.unit;
+    this.save();
   }
 
   setFugitiveOptions() {
@@ -151,6 +152,7 @@ export class FormComponent implements OnInit {
     this.fugitiveOptions = tmpFugitive.fugitiveTypes;
     this.data.fugitiveType = undefined;
     this.data.totalEmissionOutputRate = undefined;
+    this.save();
   }
 
   setFuelOptions() {
@@ -161,6 +163,7 @@ export class FormComponent implements OnInit {
     this.data.carbonFactor = 0;
     this.data.fuelType = undefined;
     this.data.totalEmissionOutputRate = undefined;
+    this.save();
   }
   setFuel() {
     let tmpFuel: FuelTypeProperties = this.fuelOptions.find((val) => { return this.data.fuelType === val.fuelType; });
@@ -186,6 +189,7 @@ export class FormComponent implements OnInit {
     this.data.carbonFactor = 0;
     this.data.eGridSubregion = undefined;
     this.data.totalEmissionOutputRate = undefined;
+    this.save();
   }
   setSubRegion() {
     let tmpSubRegion: SubRegionData = this.subregions.find((val) => { return this.data.eGridSubregion === val.subregion; });
