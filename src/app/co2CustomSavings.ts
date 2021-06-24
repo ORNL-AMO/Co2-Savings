@@ -8,7 +8,8 @@ export interface CustomTypeProperties {
     methaneFactor?: number,
     nitrousFactor?: number,
     warmingPotential?: number,
-    unit: string
+    imperialUnit: string,
+    metricUnit: string
 }
 
 export const customEmissions: Array<Custom> = [
@@ -19,7 +20,8 @@ export const customEmissions: Array<Custom> = [
                 carbonFactor: 0,
                 methaneFactor: 0,
                 nitrousFactor: 0,
-                unit: 'MMBTU'
+                imperialUnit: 'MMBTU',
+                metricUnit: 'GJ'
             }
 
     },
@@ -30,7 +32,8 @@ export const customEmissions: Array<Custom> = [
                 carbonFactor: 0,
                 methaneFactor: 0,
                 nitrousFactor: 0,
-                unit: 'MWh'
+                imperialUnit: 'MWh',
+                metricUnit: 'MWh'
             }
         ,
 
@@ -42,7 +45,8 @@ export const customEmissions: Array<Custom> = [
                 carbonFactor: 0,
                 methaneFactor: 0,
                 nitrousFactor: 0,
-                unit: 'units'
+                imperialUnit: 'units',
+                metricUnit: 'units'
             }
         ,
 
@@ -52,7 +56,8 @@ export const customEmissions: Array<Custom> = [
         customType: 
             {
                 warmingPotential: 0,
-                unit: 'lbs'
+                imperialUnit: 'lbs',
+                metricUnit: 'kg'
             }
         ,
 

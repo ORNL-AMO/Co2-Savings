@@ -36,14 +36,22 @@ export class FormComponent implements OnInit {
   isFormChange: boolean = false;
   energyUnitsSub: Subscription;
   energyUnits: string;
-  mobileUnits: string;
+  mobileUnits: string = 'gal';
+  fugitiveUnits: string = 'lb';
   constructor(private co2SavingsService: Co2SavingsService) { }
 
   ngOnInit(): void {
     this.energyUnitsSub = this.co2SavingsService.energyUnits.subscribe(val => {
       this.energyUnits = val;
-    })
-    this.mobileUnits = 'gal';
+      if (this.energyUnits == 'MMBtu') {
+        this.fugitiveUnits = 'lb';
+      } else {
+        this.fugitiveUnits = 'kg';
+      }
+      if (this.data) {
+        this.initOptions();
+      }
+    });
     this.otherFuels = otherFuels;
     this.mobileEmissions = mobileEmissions;
     this.fugitives = fugitives;
@@ -78,44 +86,16 @@ export class FormComponent implements OnInit {
   }
 
   initOptions() {
-    let tmpOtherFuel: OtherFuel = this.otherFuels.find((val) => { return this.data.energySource === val.energySource; });
-    if (tmpOtherFuel) {
-      this.fuelOptions = tmpOtherFuel.fuelTypes;
-      let selectedOption: FuelTypeProperties = this.fuelOptions.find(option => { return option.fuelType == this.data.fuelType });
-      if (selectedOption) {
-        this.data.carbonFactor = selectedOption.carbonFactor;
-        this.data.methaneFactor = selectedOption.methaneFactor;
-        this.data.nitrousFactor = selectedOption.nitrousFactor;
-      }
-    }
-    let tmpFugitive: Fugitive = this.fugitives.find((val) => { return this.data.energySource === val.energySource });
-    if (tmpFugitive) {
-      this.fugitiveOptions = tmpFugitive.fugitiveTypes;
-    }
-
-    let tmpCustom: Custom = this.customEmissions.find((val) => { return this.data.energySource === val.energySource });
-    if (tmpCustom) {
-      this.customOptions = tmpCustom.customType;
-    }
-    let tmpRegion: eGridRegion = this.eGridRegions.find((val) => { return this.data.eGridRegion === val.region; });
-    if (tmpRegion) {
-      this.subregions = tmpRegion.subregions;
-      let selectedOption: SubRegionData = this.subregions.find(option => { return option.subregion == this.data.eGridSubregion });
-      if (selectedOption) {
-        this.data.carbonFactor = selectedOption.carbonFactor;
-        this.data.methaneFactor = selectedOption.methaneFactor;
-        this.data.nitrousFactor = selectedOption.nitrousFactor;
-      }
-    }
-    let tmpMobile: MobileEmission = this.mobileEmissions.find((val) => { return this.data.energySource === val.energySource; });
-    if (tmpMobile) {
-      this.mobileOptions = tmpMobile.mobileTypes;
-      let selectedOption: MobileTypeProperties = this.mobileOptions.find(option => { return option.mobileType == this.data.mobileType });
-      if (selectedOption) {
-        this.data.carbonFactor = selectedOption.carbonFactor;
-        this.data.methaneFactor = selectedOption.methaneFactor;
-        this.data.nitrousFactor = selectedOption.nitrousFactor;
-      }
+    if (this.data.energyType == 'fuel') {
+      this.setFuelOptions();
+    } else if (this.data.energyType == 'electricity') {
+      this.setRegion();
+    } else if (this.data.energyType == 'custom') {
+      this.setCustomOptions();
+    } else if (this.data.energyType == 'mobile') {
+      this.setMobileOptions();
+    } else if (this.data.energyType == 'fugitive') {
+      this.setFugitiveOptions();
     }
   }
 
@@ -135,96 +115,137 @@ export class FormComponent implements OnInit {
 
   setCustomOptions() {
     let tmpCustom: Custom = this.customEmissions.find((val) => { return this.data.energySource === val.energySource });
-    this.customOptions = tmpCustom.customType;
-    if (this.data.energySource == 'Fugitive') {
-      this.data.totalEmissionOutputRate = this.customOptions.warmingPotential;
+    if (tmpCustom) {
+      this.customOptions = tmpCustom.customType;
+      if (this.data.energySource == 'Fugitive') {
+        this.data.totalEmissionOutputRate = this.customOptions.warmingPotential;
+      } else {
+        this.data.totalEmissionOutputRate = this.customOptions.carbonFactor;
+      }
+      if (this.energyUnits == 'MMBtu') {
+        this.data.customUnits = this.customOptions.imperialUnit;
+      } else {
+        this.data.customUnits = this.customOptions.metricUnit;
+      }
+      this.save();
     }
-
-    else {
-      this.data.totalEmissionOutputRate = this.customOptions.carbonFactor;
-    }
-    this.data.customUnits = this.customOptions.unit;
-    this.save();
   }
 
   setFugitiveOptions() {
     let tmpFugitive: Fugitive = this.fugitives.find((val) => { return this.data.energySource === val.energySource });
-    this.fugitiveOptions = tmpFugitive.fugitiveTypes;
-    this.data.fugitiveType = undefined;
-    this.data.totalEmissionOutputRate = undefined;
-    this.save();
+    if (tmpFugitive) {
+      this.fugitiveOptions = tmpFugitive.fugitiveTypes;
+      this.data.fugitiveType = undefined;
+      this.data.totalEmissionOutputRate = undefined;
+      this.save();
+    }
   }
 
   setFuelOptions() {
     let tmpOtherFuel: OtherFuel = this.otherFuels.find((val) => { return this.data.energySource === val.energySource; });
-    this.fuelOptions = tmpOtherFuel.fuelTypes;
-    this.data.methaneFactor = 0;
-    this.data.nitrousFactor = 0;
-    this.data.carbonFactor = 0;
-    this.data.fuelType = undefined;
-    this.data.totalEmissionOutputRate = undefined;
-    this.save();
+    if (tmpOtherFuel) {
+      this.fuelOptions = tmpOtherFuel.fuelTypes;
+      let selectedOption: FuelTypeProperties = this.fuelOptions.find(option => { return option.fuelType == this.data.fuelType });
+      if (selectedOption) {
+        this.setFuelFactors(selectedOption);
+      } else {
+        this.data.methaneFactor = 0;
+        this.data.nitrousFactor = 0;
+        this.data.carbonFactor = 0;
+        this.data.fuelType = undefined;
+        this.data.totalEmissionOutputRate = undefined;
+        this.save();
+      }
+    }
   }
   setFuel() {
     let tmpFuel: FuelTypeProperties = this.fuelOptions.find((val) => { return this.data.fuelType === val.fuelType; });
-    this.data.totalEmissionOutputRate = tmpFuel.carbonFactor;
-    this.data.carbonFactor = tmpFuel.carbonFactor;
-    this.data.methaneFactor = tmpFuel.methaneFactor;
-    this.data.nitrousFactor = tmpFuel.nitrousFactor;
+    if (tmpFuel) {
+      this.setFuelFactors(tmpFuel);
+    }
+  }
+
+  setFuelFactors(selectedOption: FuelTypeProperties) {
+    if (this.energyUnits == 'MMBtu') {
+      this.data.carbonFactor = selectedOption.carbonFactor;
+      this.data.methaneFactor = selectedOption.methaneFactor;
+      this.data.nitrousFactor = selectedOption.nitrousFactor;
+    } else {
+      this.data.carbonFactor = this.co2SavingsService.convertPerMMBtuToPerGJ(selectedOption.carbonFactor);
+      this.data.methaneFactor = this.co2SavingsService.convertPerMMBtuToPerGJ(selectedOption.methaneFactor);
+      this.data.nitrousFactor = this.co2SavingsService.convertPerMMBtuToPerGJ(selectedOption.nitrousFactor);
+    }
     this.save();
   }
 
   setFugitive() {
     let tmpNewFugitive: FugitiveTypeProperties = this.fugitiveOptions.find((val) => { return this.data.fugitiveType === val.fugitiveType; });
-    this.data.totalEmissionOutputRate = tmpNewFugitive.warmingPotential;
-    this.save();
+    if (tmpNewFugitive) {
+      this.data.totalEmissionOutputRate = tmpNewFugitive.warmingPotential;
+      this.save();
+    }
   }
-
 
   setRegion() {
     let tmpRegion: eGridRegion = this.eGridRegions.find((val) => { return this.data.eGridRegion === val.region; });
-    this.subregions = tmpRegion.subregions;
-    this.data.methaneFactor = 0;
-    this.data.nitrousFactor = 0;
-    this.data.carbonFactor = 0;
-    this.data.eGridSubregion = undefined;
-    this.data.totalEmissionOutputRate = undefined;
-    this.save();
+    if (tmpRegion) {
+      this.subregions = tmpRegion.subregions;
+      let selectedOption: SubRegionData = this.subregions.find(option => { return option.subregion == this.data.eGridSubregion });
+      if (selectedOption) {
+        this.data.carbonFactor = selectedOption.carbonFactor;
+        this.data.methaneFactor = selectedOption.methaneFactor;
+        this.data.nitrousFactor = selectedOption.nitrousFactor;
+      } else {
+        this.data.methaneFactor = 0;
+        this.data.nitrousFactor = 0;
+        this.data.carbonFactor = 0;
+        this.data.eGridSubregion = undefined;
+        this.data.totalEmissionOutputRate = undefined;
+      }
+      this.save();
+    }
   }
+
   setSubRegion() {
     let tmpSubRegion: SubRegionData = this.subregions.find((val) => { return this.data.eGridSubregion === val.subregion; });
-    this.data.totalEmissionOutputRate = tmpSubRegion.carbonFactor;
-    this.data.carbonFactor = tmpSubRegion.carbonFactor;
-    this.data.methaneFactor = tmpSubRegion.methaneFactor;
-    this.data.nitrousFactor = tmpSubRegion.nitrousFactor;
-    this.save();
+    if (tmpSubRegion) {
+      this.data.totalEmissionOutputRate = tmpSubRegion.carbonFactor;
+      this.data.carbonFactor = tmpSubRegion.carbonFactor;
+      this.data.methaneFactor = tmpSubRegion.methaneFactor;
+      this.data.nitrousFactor = tmpSubRegion.nitrousFactor;
+      this.save();
+    }
   }
   setMobileOptions() {
     let tmpMobile: MobileEmission = this.mobileEmissions.find((val) => { return this.data.energySource === val.energySource; });
-    this.mobileOptions = tmpMobile.mobileTypes;
-    if (this.data.energySource == 'Commuter Vehicles') {
-      this.mobileUnits = 'passenger-mile';
+    if (tmpMobile) {
+      this.mobileOptions = tmpMobile.mobileTypes;
+      let tmpMobileProperty: MobileTypeProperties = this.mobileOptions.find((val) => { return this.data.mobileType === val.mobileType; });
+      if (tmpMobileProperty) {
+        this.setMobile();
+      } else {
+        this.data.mobileType = undefined;
+        this.data.totalEmissionOutputRate = undefined;
+        this.data.methaneFactor = 0;
+        this.data.nitrousFactor = 0;
+        this.data.carbonFactor = 0;
+        this.save();
+      }
     }
-    else if (this.data.energySource == 'Transportation') {
-      this.mobileUnits = 'ton-mile';
-    }
-    this.data.mobileType = undefined;
-    this.data.totalEmissionOutputRate = undefined;
-    this.data.methaneFactor = 0;
-    this.data.nitrousFactor = 0;
-    this.data.carbonFactor = 0;
-    this.save();
   }
   setMobile() {
     let tmpMobile: MobileTypeProperties = this.mobileOptions.find((val) => { return this.data.mobileType === val.mobileType; });
-    this.data.totalEmissionOutputRate = tmpMobile.carbonFactor;
-    this.data.carbonFactor = tmpMobile.carbonFactor;
-    this.data.methaneFactor = tmpMobile.methaneFactor;
-    this.data.nitrousFactor = tmpMobile.nitrousFactor;
-    this.data.methaneFactor = 0;
-    this.data.nitrousFactor = 0;
-    this.data.carbonFactor = 0;
-    this.mobileUnits = tmpMobile.unit;
+    if (tmpMobile) {
+      let convertedMobile: MobileTypeProperties = this.co2SavingsService.convertMobile(tmpMobile);
+      this.data.carbonFactor = convertedMobile.carbonFactor;
+      this.data.methaneFactor = convertedMobile.methaneFactor;
+      this.data.nitrousFactor = convertedMobile.nitrousFactor;
+    }
+    if (this.energyUnits == 'MMBtu') {
+      this.mobileUnits = tmpMobile.imperialUnit;
+    } else {
+      this.mobileUnits = tmpMobile.metricUnit;
+    }
     this.save();
   }
 
