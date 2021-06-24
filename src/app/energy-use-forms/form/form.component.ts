@@ -213,6 +213,7 @@ export class FormComponent implements OnInit {
     this.data.methaneFactor = 0;
     this.data.nitrousFactor = 0;
     this.data.carbonFactor = 0;
+    this.save();
   }
   setMobile() {
     let tmpMobile: MobileTypeProperties = this.mobileOptions.find((val) => { return this.data.mobileType === val.mobileType; });

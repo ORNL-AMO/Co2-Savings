@@ -39,13 +39,11 @@ export class Co2SavingsService {
       let conversionHelper: number = 0.453592;
       dataCpy.totalEmissionOutputRate = dataCpy.totalEmissionOutputRate * conversionHelper;
     }
-    if (dataCpy.totalEmissionOutputRate && dataCpy.energyUse) {
-      //set results on original obj
-      if (data.energyType == 'fugitive') {
-        data.totalEmissionOutput = (dataCpy.totalEmissionOutputRate) * (dataCpy.energyUse / 1000);
-      } else {
-        data.totalEmissionOutput = (dataCpy.energyUse) * (dataCpy.carbonFactor + dataCpy.methaneFactor * 25 / 1000 + dataCpy.nitrousFactor * 298 / 1000);
-      }
+    //set results on original obj
+    if (dataCpy.totalEmissionOutputRate && data.energyType == 'fugitive') {
+      data.totalEmissionOutput = (dataCpy.totalEmissionOutputRate) * (dataCpy.energyUse / 1000);
+    } else if (dataCpy.energyUse) {
+      data.totalEmissionOutput = (dataCpy.energyUse) * (dataCpy.carbonFactor + dataCpy.methaneFactor * 25 / 1000 + dataCpy.nitrousFactor * 298 / 1000);
     } else {
       data.totalEmissionOutput = 0;
     }
