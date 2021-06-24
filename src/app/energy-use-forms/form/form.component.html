@@ -211,24 +211,42 @@
         <label class="w-50">
             Carbon Emissions
         </label>
-        <label class="w-50 text-center">
+        <label class="w-50 text-center" *ngIf="data.energyType == 'fuel'">
             {{carbonEmissions | number:"0.0-2"}} kg CO<sub>2</sub>/MMBtu
+        </label>
+        <label class="w-50 text-center" *ngIf="data.energyType == 'electricity'">
+            {{carbonEmissions | number:"0.0-2"}} kg CO<sub>2</sub>/MWh
+        </label>
+        <label class="w-50 text-center" *ngIf="data.energyType == 'mobile'">
+            {{carbonEmissions | number:"0.0-2"}} kg CO<sub>2</sub>/{{mobileUnits}}
         </label>
     </div>
     <div *ngIf="data.energyType != 'custom' && data.energyType != 'fugitive'" class="d-flex w-100">
         <label class="w-50">
             Methane Emissions
         </label>
-        <label class="w-50 text-center">
+        <label class="w-50 text-center" *ngIf="data.energyType == 'fuel'">
             {{methaneEmissions | number:"0.0-2"}} g CH<sub>4</sub>/MMBtu
+        </label>
+        <label class="w-50 text-center" *ngIf="data.energyType == 'electricity'">
+            {{methaneEmissions | number:"0.0-2"}} kg CH<sub>4</sub>/MWh
+        </label>
+        <label class="w-50 text-center" *ngIf="data.energyType == 'mobile'">
+            {{methaneEmissions | number:"0.0-2"}} kg CH<sub>4</sub>/{{mobileUnits}}
         </label>
     </div>
     <div *ngIf="data.energyType != 'custom' && data.energyType != 'fugitive'" class="d-flex w-100">
         <label class="w-50">
             Nitrous Oxide Emissions
         </label>
-        <label class="w-50 text-center">
+        <label class="w-50 text-center" *ngIf="data.energyType == 'fuel'">
             {{nitrousEmissions | number:"0.0-2"}} g NO<sub>2</sub>/MMBtu
+        </label>
+        <label class="w-50 text-center" *ngIf="data.energyType == 'electricity'">
+            {{nitrousEmissions | number:"0.0-2"}} kg NO<sub>2</sub>/MWh
+        </label>
+        <label class="w-50 text-center" *ngIf="data.energyType == 'mobile'">
+            {{nitrousEmissions | number:"0.0-2"}} kg NO<sub>2</sub>/{{mobileUnits}}
         </label>
     </div>
 </form>
