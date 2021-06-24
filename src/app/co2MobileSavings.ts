@@ -177,7 +177,7 @@ export const mobileEmissions: Array<MobileEmission> = [
         ]
     },
     {
-        energySource: 'Transportation',
+        energySource: 'Freight',
         mobileTypes: [
             {
                 mobileType: 'Medium and Heavy-Duty Truck',

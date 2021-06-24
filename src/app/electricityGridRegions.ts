@@ -239,9 +239,5 @@ export const electricityGridRegions: Array<eGridRegion> = [
                 nitrousFactor: 0
             }
         ]
-    },
-    {
-        region: 'Other',
-        subregions: []
     }
 ];
