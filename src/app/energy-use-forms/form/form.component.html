@@ -203,7 +203,7 @@
             <span class="input-group-addon units" *ngIf="data.energyType == 'fuel'">{{energyUnits}}</span>
             <span class="input-group-addon units" *ngIf="data.energyType == 'electricity'">MWh</span>
             <span class="input-group-addon units" *ngIf="data.energyType == 'mobile'">{{mobileUnits}}</span>
-            <span class="input-group-addon units" *ngIf="data.energyType == 'fugitive'">lbs</span>
+            <span class="input-group-addon units" *ngIf="data.energyType == 'fugitive'">{{fugitiveUnits}}</span>
             <span class="input-group-addon units" *ngIf="data.energyType == 'custom'">{{data.customUnits}}</span>
         </div>
     </div>
@@ -212,7 +212,7 @@
             Carbon Emissions
         </label>
         <label class="w-50 text-center" *ngIf="data.energyType == 'fuel'">
-            {{data.carbonFactor | number:"0.0-2"}} kg CO<sub>2</sub>/MMBtu
+            {{data.carbonFactor | number:"0.0-2"}} kg CO<sub>2</sub>/{{energyUnits}}
         </label>
         <label class="w-50 text-center" *ngIf="data.energyType == 'electricity'">
             {{data.carbonFactor | number:"0.0-2"}} kg CO<sub>2</sub>/MWh
@@ -226,13 +226,13 @@
             Methane Emissions
         </label>
         <label class="w-50 text-center" *ngIf="data.energyType == 'fuel'">
-            {{data.methanFactor | number:"0.0-2"}} g CH<sub>4</sub>/MMBtu
+            {{data.methaneFactor | number:"0.0-2"}} g CH<sub>4</sub>/{{energyUnits}}
         </label>
         <label class="w-50 text-center" *ngIf="data.energyType == 'electricity'">
-            {{data.methanFactor | number:"0.0-2"}} kg CH<sub>4</sub>/MWh
+            {{data.methaneFactor | number:"0.0-2"}} kg CH<sub>4</sub>/MWh
         </label>
         <label class="w-50 text-center" *ngIf="data.energyType == 'mobile'">
-            {{data.methanFactor | number:"0.0-2"}} kg CH<sub>4</sub>/{{mobileUnits}}
+            {{data.methaneFactor | number:"0.0-2"}} kg CH<sub>4</sub>/{{mobileUnits}}
         </label>
     </div>
     <div *ngIf="data.energyType != 'custom' && data.energyType != 'fugitive'" class="d-flex w-100">
@@ -240,7 +240,7 @@
             Nitrous Oxide Emissions
         </label>
         <label class="w-50 text-center" *ngIf="data.energyType == 'fuel'">
-            {{data.nitrousFactor | number:"0.0-2"}} g NO<sub>2</sub>/MMBtu
+            {{data.nitrousFactor | number:"0.0-2"}} g NO<sub>2</sub>/{{energyUnits}}
         </label>
         <label class="w-50 text-center" *ngIf="data.energyType == 'electricity'">
             {{data.nitrousFactor | number:"0.0-2"}} kg NO<sub>2</sub>/MWh
