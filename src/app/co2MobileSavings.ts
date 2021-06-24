@@ -180,7 +180,7 @@ export const mobileEmissions: Array<MobileEmission> = [
             //     energySource: 'Freight',
             //     mobileTypes: [
             {
-                mobileType: 'Medium and Heavy-Duty Freight Truck',
+                mobileType: 'Medium and Heavy-Duty Truck',
                 carbonFactor: 0.207,
                 methaneFactor: 0.002,
                 nitrousFactor: 0.0046,
@@ -188,7 +188,7 @@ export const mobileEmissions: Array<MobileEmission> = [
                 metricUnit: 'tonne-km'
             },
             {
-                mobileType: 'Freight Rail',
+                mobileType: 'Rail',
                 carbonFactor: 0.021,
                 methaneFactor: 0.0017,
                 nitrousFactor: 0.0005,
@@ -196,7 +196,7 @@ export const mobileEmissions: Array<MobileEmission> = [
                 metricUnit: 'tonne-km'
             },
             {
-                mobileType: 'Waterborne Freight Craft',
+                mobileType: 'Waterborne Craft',
                 carbonFactor: 0.04,
                 methaneFactor: 0.0122,
                 nitrousFactor: 0.0017,
@@ -204,7 +204,7 @@ export const mobileEmissions: Array<MobileEmission> = [
                 metricUnit: 'tonne-km'
             },
             {
-                mobileType: 'Freight Aircraft',
+                mobileType: 'Aircraft',
                 carbonFactor: 1.265,
                 methaneFactor: 0,
                 nitrousFactor: 0.0389,
