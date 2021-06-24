@@ -39,9 +39,11 @@ export class Co2SavingsService {
       let conversionHelper: number = 0.453592;
       dataCpy.totalEmissionOutputRate = dataCpy.totalEmissionOutputRate * conversionHelper;
     }
-    if (dataCpy.totalEmissionOutputRate && dataCpy.energyUse) {
-      //set results on original obj
+    //set results on original obj
+    if (dataCpy.totalEmissionOutputRate && data.energyType == 'fugitive') {
       data.totalEmissionOutput = (dataCpy.totalEmissionOutputRate) * (dataCpy.energyUse / 1000);
+    } else if (dataCpy.energyUse) {
+      data.totalEmissionOutput = (dataCpy.energyUse) * (dataCpy.carbonFactor + dataCpy.methaneFactor * 25 / 1000 + dataCpy.nitrousFactor * 298 / 1000);
     } else {
       data.totalEmissionOutput = 0;
     }
@@ -67,7 +69,10 @@ export class Co2SavingsService {
       energyUse: energyUse,
       fuelType: 'Natural Gas',
       energySource: 'Natural Gas',
-      totalEmissionOutput: 0
+      totalEmissionOutput: 0,
+      carbonFactor: 53.05,
+      methaneFactor: 1,
+      nitrousFactor: .1
     }]);
 
     energyUse = 1500;
@@ -83,7 +88,10 @@ export class Co2SavingsService {
       energyUse: energyUse,
       fuelType: 'Natural Gas',
       energySource: 'Natural Gas',
-      totalEmissionOutput: 0
+      totalEmissionOutput: 0,
+      carbonFactor: 53.05,
+      methaneFactor: 1,
+      nitrousFactor: .1
     }]);
   }
 
