@@ -29,13 +29,7 @@ export class Co2SavingsService {
     let energyUnits: string = this.energyUnits.getValue();
     //use copy for conversion data
     let dataCpy: Co2SavingsData = JSON.parse(JSON.stringify(data));
-    if (energyUnits != 'MMBtu' && data.energyType == 'fuel') {
-      //1 GJ = .947813 MMBtu
-      let conversionHelper: number = 0.947813;
-      dataCpy.totalEmissionOutputRate = dataCpy.totalEmissionOutputRate / conversionHelper;
-      dataCpy.energyUse = dataCpy.energyUse * 0.947813;
-    }
-    else if (data.energyType == 'fugitive' && energyUnits == 'MMBtu') {
+    if (data.energyType == 'fugitive' && energyUnits == 'MMBtu') {
       // 1 lb = 0.453592 kg
       let conversionHelper: number = 0.453592;
       dataCpy.totalEmissionOutputRate = dataCpy.totalEmissionOutputRate * conversionHelper;
