@@ -41,7 +41,7 @@ export class Co2SavingsService {
       dataCpy.totalEmissionOutputRate = dataCpy.totalEmissionOutputRate * conversionHelper;
     }
     //set results on original obj
-    if (dataCpy.totalEmissionOutputRate && data.energyType == 'fugitive') {
+    if (dataCpy.totalEmissionOutputRate && (data.energyType == 'fugitive' || (data.energyType == 'custom' && data.energySource == 'Fugitive'))) {
       data.totalEmissionOutput = (dataCpy.totalEmissionOutputRate) * (dataCpy.energyUse / 1000);
     } else if (dataCpy.energyUse) {
       data.totalEmissionOutput = (dataCpy.energyUse) * (dataCpy.carbonFactor + dataCpy.methaneFactor * 25 / 1000 + dataCpy.nitrousFactor * 298 / 1000);
