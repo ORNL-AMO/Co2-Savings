@@ -170,7 +170,7 @@
         <label for="{{'carbonOutput'+modId+index}}">CO<sub>2</sub> Emissions</label>
         <div class="input-group">
             <input name="{{'carbonOutput'+modId+index}}" type="number" step="any" class="form-control"
-                id="{{'carbonOutput'+modId+index}}" (input)="save()" [(ngModel)]="data.totalEmissionOutputRate"
+                id="{{'carbonOutput'+modId+index}}" (input)="save()" [(ngModel)]="data.carbonFactor"
                 onfocus="this.select();" [required]="true" [disabled]="!selected">
             <span class="input-group-addon units small" *ngIf="data.energyType != 'fugitive'">kg CO<sub>2</sub>/
                 <span>{{data.customUnits}}</span>

@@ -183,9 +183,10 @@ export class FormComponent implements OnInit {
       this.data.methaneFactor = selectedOption.methaneFactor;
       this.data.nitrousFactor = selectedOption.nitrousFactor;
     } else {
-      this.data.carbonFactor = this.co2SavingsService.convertPerMMBtuToPerGJ(selectedOption.carbonFactor);
-      this.data.methaneFactor = this.co2SavingsService.convertPerMMBtuToPerGJ(selectedOption.methaneFactor);
-      this.data.nitrousFactor = this.co2SavingsService.convertPerMMBtuToPerGJ(selectedOption.nitrousFactor);
+      //use copy for converting
+      this.data.carbonFactor = this.co2SavingsService.convertPerMMBtuToPerGJ(JSON.parse(JSON.stringify(selectedOption.carbonFactor)));
+      this.data.methaneFactor = this.co2SavingsService.convertPerMMBtuToPerGJ(JSON.parse(JSON.stringify(selectedOption.methaneFactor)));
+      this.data.nitrousFactor = this.co2SavingsService.convertPerMMBtuToPerGJ(JSON.parse(JSON.stringify(selectedOption.nitrousFactor)));
     }
     this.save();
   }
@@ -248,7 +249,7 @@ export class FormComponent implements OnInit {
   setMobile() {
     let tmpMobile: MobileTypeProperties = this.mobileOptions.find((val) => { return this.data.mobileType === val.mobileType; });
     if (tmpMobile) {
-      let convertedMobile: MobileTypeProperties = this.co2SavingsService.convertMobile(tmpMobile);
+      let convertedMobile: MobileTypeProperties = this.co2SavingsService.convertMobile(JSON.parse(JSON.stringify(tmpMobile)));
       this.data.carbonFactor = convertedMobile.carbonFactor;
       this.data.methaneFactor = convertedMobile.methaneFactor;
       this.data.nitrousFactor = convertedMobile.nitrousFactor;

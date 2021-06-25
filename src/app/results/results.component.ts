@@ -37,10 +37,16 @@ export class ResultsComponent implements OnInit {
     '#3f4a7d'
   ];
 
+  resultUnit: string;
   constructor(private co2SavingsService: Co2SavingsService, private plotlyService: PlotlyService, private cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.energyUnitsSub = this.co2SavingsService.energyUnits.subscribe(val => {
+      if(val == 'MMBtu'){
+        this.resultUnit = 'tonne';
+      }else{
+        this.resultUnit = 'kg';
+      }
       this.drawChart();
     });
     this.baselineDataSub = this.co2SavingsService.baselineData.subscribe(val => {
@@ -133,7 +139,7 @@ export class ResultsComponent implements OnInit {
         },
         yaxis: {
           title: {
-            text: 'tonne CO<sub>2e</sub>',
+            text: this.resultUnit +' CO<sub>2e</sub>',
             font: {
               family: "Helvetica Neue, sans-serif",
               size: 18
