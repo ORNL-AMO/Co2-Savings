@@ -45,11 +45,9 @@ export class Co2SavingsService {
       data.totalEmissionOutput = (dataCpy.totalEmissionOutputRate) * (dataCpy.energyUse / 1000);
     } else if (dataCpy.energyUse) {
       data.totalEmissionOutput = (dataCpy.energyUse) * (dataCpy.carbonFactor + dataCpy.methaneFactor * 25 / 1000 + dataCpy.nitrousFactor * 298 / 1000);
-      if(energyUnits == 'MMBtu'){
-        //convert results kg to tonne
-        data.totalEmissionOutput = data.totalEmissionOutput * .001;
-      }
-      
+      //convert results kg to tonne
+      data.totalEmissionOutput = data.totalEmissionOutput * .001;
+
     } else {
       data.totalEmissionOutput = 0;
     }
