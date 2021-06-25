@@ -35,7 +35,7 @@ export class Co2SavingsService {
       dataCpy.totalEmissionOutputRate = dataCpy.totalEmissionOutputRate / conversionHelper;
       dataCpy.energyUse = dataCpy.energyUse * 0.947813;
     }
-    else if (data.energyType == 'fugitive' || data.customUnits == 'lbs') {
+    else if (data.energyType == 'fugitive' && energyUnits == 'MMBtu') {
       // 1 lb = 0.453592 kg
       let conversionHelper: number = 0.453592;
       dataCpy.totalEmissionOutputRate = dataCpy.totalEmissionOutputRate * conversionHelper;
@@ -45,6 +45,11 @@ export class Co2SavingsService {
       data.totalEmissionOutput = (dataCpy.totalEmissionOutputRate) * (dataCpy.energyUse / 1000);
     } else if (dataCpy.energyUse) {
       data.totalEmissionOutput = (dataCpy.energyUse) * (dataCpy.carbonFactor + dataCpy.methaneFactor * 25 / 1000 + dataCpy.nitrousFactor * 298 / 1000);
+      if(energyUnits == 'MMBtu'){
+        //convert results kg to tonne
+        data.totalEmissionOutput = data.totalEmissionOutput * .001;
+      }
+      
     } else {
       data.totalEmissionOutput = 0;
     }
