@@ -1,5 +1,6 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router'; 
+import { EGridService } from './e-grid.service';
 
 // declare ga as a function to access the JS code in TS
 declare let gtag: Function;
@@ -25,7 +26,7 @@ export class AppComponent {
   }
   headerHeight: number;
   baselineSelected: boolean = true;
-  constructor(public router: Router){   
+  constructor(public router: Router, private eGridService: EGridService){   
     this.router.events.subscribe(event => {
        if(event instanceof NavigationEnd){
            gtag('config', 'G-29K0R91S12', 
@@ -38,6 +39,7 @@ export class AppComponent {
   )}
 
   ngOnInit() {
+    this.eGridService.getAllSubRegions();
   }
 
   ngAfterViewInit(){
