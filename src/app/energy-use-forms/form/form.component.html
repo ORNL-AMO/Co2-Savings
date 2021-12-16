@@ -4,7 +4,7 @@
             <label for="{{'energyType'+modId+index}}">Emission Source Type</label>
             <div class="input-group">
                 <select name="{{'energyType'+modId+index}}" class="form-control" id="{{'energyType'+modId+index}}"
-                    [(ngModel)]="data.energyType" (change)="changeEnergyType()" [required]="true"
+                    [(ngModel)]="data.energyType" (change)="changeEnergyType()" (focus)="focusField('energyType')" [required]="true"
                     [disabled]="!selected">
                     <option [ngValue]="'fuel'">Fuel</option>
                     <option [ngValue]="'electricity'">Electricity</option>
@@ -21,7 +21,7 @@
             <label for="{{'energySource'+modId+index}}">Emission Source</label>
             <div class="input-group">
                 <select name="{{'energySource'+modId+index}}" class="form-control" id="{{'energySource'+modId+index}}"
-                    [(ngModel)]="data.energySource" (change)="setFuelOptions()" [required]="true"
+                    [(ngModel)]="data.energySource" (focus)="focusField('energySource')" (change)="setFuelOptions()" [required]="true"
                     [disabled]="!selected">
                     <option *ngFor="let option of otherFuels" [ngValue]="option.energySource">
                         {{option.energySource}}</option>
@@ -35,7 +35,7 @@
             <label for="{{'energySource'+modId+index}}">Fugitive Emission Source</label>
             <div class="input-group">
                 <select name="{{'energySource'+modId+index}}" class="form-control" id="{{'energySource'+modId+index}}"
-                    [(ngModel)]="data.energySource" (change)="setFugitiveOptions()" [required]="true"
+                    [(ngModel)]="data.energySource" (focus)="focusField('energySource')" (change)="setFugitiveOptions()" [required]="true"
                     [disabled]="!selected">
                     <option *ngFor="let option of fugitives" [ngValue]="option.energySource">
                         {{option.energySource}}</option>
@@ -49,7 +49,7 @@
             <label for="{{'energySource'+modId+index}}">Emission Source</label>
             <div class="input-group">
                 <select name="{{'energySource'+modId+index}}" class="form-control" id="{{'energySource'+modId+index}}"
-                    [(ngModel)]="data.energySource" (change)="setCustomOptions()" [required]="true"
+                    [(ngModel)]="data.energySource" (focus)="focusField('energySource')" (change)="setCustomOptions()" [required]="true"
                     [disabled]="!selected">
                     <option *ngFor="let option of customEmissions" [ngValue]="option.energySource">
                         {{option.energySource}}
@@ -64,7 +64,7 @@
             <label for="{{'energySource'+modId+index}}">Emission Source</label>
             <div class="input-group">
                 <select name="{{'energySource'+modId+index}}" class="form-control" id="{{'energySource'+modId+index}}"
-                    [(ngModel)]="data.energySource" (change)="setMobileOptions()" [required]="true"
+                    [(ngModel)]="data.energySource" (focus)="focusField('energySource')" (change)="setMobileOptions()" [required]="true"
                     [disabled]="!selected">
                     <option *ngFor="let option of mobileEmissions" [ngValue]="option.energySource">
                         {{option.energySource}}</option>
@@ -79,7 +79,7 @@
             <label for="{{'fuelType'+modId+index}}">Fuel Type</label>
             <div class="input-group">
                 <select name="{{'fuelType'+modId+index}}" class="form-control" id="{{'fuelType'+modId+index}}"
-                    [(ngModel)]="data.fuelType" (change)="setFuel()" [required]="true" [disabled]="!selected">
+                    [(ngModel)]="data.fuelType" (focus)="focusField('fuelType')" (change)="setFuel()" [required]="true" [disabled]="!selected">
                     <option *ngFor="let option of fuelOptions" [ngValue]="option.fuelType">{{option.fuelType}}
                     </option>
                 </select>
@@ -115,31 +115,35 @@
         </div>
     </div>
 
-    <div class="form-section" *ngIf="data.energyType == 'electricity'">
-        <div class="form-group">
-            <label for="{{'eGridRegion'+modId+index}}">eGrid Region</label>
-            <div class="input-group">
-                <select name="{{'eGridRegion'+modId+index}}" class="form-control" id="{{'eGridRegion'+modId+index}}"
-                    [(ngModel)]="data.eGridRegion" (change)="setRegion()" [required]="true" [disabled]="!selected">
-                    <option *ngFor="let option of eGridRegions" [ngValue]="option.region">{{option.region}}</option>
-                </select>
-            </div>
-        </div>
-    </div>
 
     <div class="form-section" *ngIf="data.energyType == 'electricity'">
         <div class="form-group">
-            <label for="{{'eGridSubregion'+modId+index}}">eGrid Subregion</label>
-            <div class="input-group">
-                <select name="{{'eGridSubregion'+modId+index}}" class="form-control"
-                    id="{{'eGridSubregion'+modId+index}}" [(ngModel)]="data.eGridSubregion" (change)="setSubRegion()"
-                    [required]="true" [disabled]="!selected">
-                    <option *ngFor="let option of subregions" [ngValue]="option.subregion">{{option.subregion}}
-                    </option>
-                </select>
-            </div>
+          <label for="{{'zipcode'+modId+index}}">Zipcode</label>
+          <div class="input-group">
+            <input name="{{'zipcode'+modId+index}}" type="text" class="form-control" id="{{'zipcode'+modId+index}}"
+            [required]="true" [disabled]="!selected"  
+            (input)="setZipcode()" [(ngModel)]="data.zipcode" [required]="true" (focus)="focusField('zipcode')">
+          </div>
         </div>
-    </div>
+      
+        <div *ngIf="zipCodeSubRegionData" class="form-group">
+          <label for="{{'eGridSubregion'+modId+index}}">eGRID Subregion</label>
+          <div *ngIf="zipCodeSubRegionData.length > 1" class="input-group">
+            <select name="{{'eGridSubregion'+modId+index}}" class="form-control" id="{{'eGridSubregion'+modId+index}}"
+              [(ngModel)]="data.eGridSubregion" (change)="setSubRegionEmissionsOutput()" [required]="true"
+               (focus)="focusField('eGridSubregion')">
+              <option *ngFor="let subregion of zipCodeSubRegionData" [ngValue]="subregion">{{subregion}}</option>
+            </select>
+          </div>
+          <div *ngIf="hasValidSubRegion && zipCodeSubRegionData.length < 2" class="text-center small">
+            {{data.eGridSubregion}}
+          </div>
+          <div *ngIf="!hasValidSubRegion || !data.eGridSubregion" class="text-center small">
+            <strong>&mdash; &mdash;</strong>
+          </div>
+        </div>
+      
+      </div>
 
     <div class="form-section" *ngIf="data.energyType == 'fugitive'">
         <div class="form-group">
@@ -161,6 +165,7 @@
         <div class="input-group">
             <input name="{{'totalEmissionOutputRate'+modId+index}}" type="number" step="any" class="form-control"
                 id="{{'totalEmissionOutputRate'+modId+index}}" (input)="save()"
+                (focus)="focusField('totalEmissionOutputRate')"
                 [(ngModel)]="data.totalEmissionOutputRate" onfocus="this.select();" [required]="true"
                 [disabled]="!selected">
         </div>
@@ -212,6 +217,7 @@
         </label>
         <div class="input-group">
             <input name="{{'energyUse'+modId+index}}" type="number" step="any" class="form-control"
+                (focus)="focusField(data.energyType)"
                 id="{{'energyUse'+modId+index}}" (input)="save()" [(ngModel)]="data.energyUse" onfocus="this.select();"
                 [required]="true" [disabled]="!selected">
             <span class="input-group-addon units" *ngIf="data.energyType == 'fuel'">{{energyUnits}}</span>

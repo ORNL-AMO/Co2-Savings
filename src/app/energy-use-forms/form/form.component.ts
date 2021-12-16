@@ -3,9 +3,10 @@ import { Subscription } from 'rxjs';
 import { Co2SavingsData, Co2SavingsService } from 'src/app/co2-savings.service';
 import { FuelTypeProperties, OtherFuel, otherFuels } from 'src/app/co2FuelSavingsFuels';
 import { FugitiveTypeProperties, Fugitive, fugitives } from 'src/app/co2FugitiveSavings';
-import { eGridRegion, electricityGridRegions, SubRegionData } from 'src/app/electricityGridRegions';
 import { customEmissions, Custom, CustomTypeProperties } from 'src/app/co2CustomSavings';
 import { MobileEmission, MobileTypeProperties, mobileEmissions } from 'src/app/co2MobileSavings';
+import { EGridService, SubRegionData, SubregionEmissions } from 'src/app/e-grid.service';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-form',
@@ -27,18 +28,19 @@ export class FormComponent implements OnInit {
   fugitives: Array<Fugitive>;
   customEmissions: Array<Custom>;
   mobileEmissions: Array<MobileEmission>;
-  eGridRegions: Array<eGridRegion>;
   fuelOptions: Array<FuelTypeProperties>;
   mobileOptions: Array<MobileTypeProperties>;
   fugitiveOptions: Array<FugitiveTypeProperties>;
   customOptions: CustomTypeProperties;
-  subregions: Array<SubRegionData>;
   isFormChange: boolean = false;
   energyUnitsSub: Subscription;
   energyUnits: string;
   mobileUnits: string = 'gal';
   fugitiveUnits: string = 'lb';
-  constructor(private co2SavingsService: Co2SavingsService) { }
+
+  hasValidSubRegion: boolean;
+  zipCodeSubRegionData: Array<string>;
+  constructor(private co2SavingsService: Co2SavingsService, private egridService: EGridService) { }
 
   ngOnInit(): void {
     this.energyUnitsSub = this.co2SavingsService.energyUnits.subscribe(val => {
@@ -56,7 +58,6 @@ export class FormComponent implements OnInit {
     this.mobileEmissions = mobileEmissions;
     this.fugitives = fugitives;
     this.customEmissions = customEmissions;
-    this.eGridRegions = electricityGridRegions;
     if (this.isBaseline) {
       this.modId = '_baseline_';
       this.dataSub = this.co2SavingsService.baselineData.subscribe(val => {
@@ -97,11 +98,18 @@ export class FormComponent implements OnInit {
     this.energyUnitsSub.unsubscribe();
   }
 
+  focusField(str: string) {
+    if (str === 'fuel' || str === 'electricity') {
+      str += 'Use';
+    }
+    this.co2SavingsService.currentField.next(str);
+  }
+
   initOptions() {
     if (this.data.energyType == 'fuel') {
       this.setFuelOptions();
     } else if (this.data.energyType == 'electricity') {
-      this.setRegion();
+      this.setSubRegionData();
     } else if (this.data.energyType == 'custom') {
       this.setCustomOptions();
     } else if (this.data.energyType == 'mobile') {
@@ -122,6 +130,7 @@ export class FormComponent implements OnInit {
     this.data.methaneFactor = 0;
     this.data.nitrousFactor = 0;
     this.data.carbonFactor = 0;
+    this.setSubRegionData();
     this.save();
   }
 
@@ -199,33 +208,45 @@ export class FormComponent implements OnInit {
     }
   }
 
-  setRegion() {
-    let tmpRegion: eGridRegion = this.eGridRegions.find((val) => { return this.data.eGridRegion === val.region; });
-    if (tmpRegion) {
-      this.subregions = tmpRegion.subregions;
-      let selectedOption: SubRegionData = this.subregions.find(option => { return option.subregion == this.data.eGridSubregion });
-      if (selectedOption) {
-        this.data.carbonFactor = selectedOption.carbonFactor;
-        this.data.methaneFactor = selectedOption.methaneFactor;
-        this.data.nitrousFactor = selectedOption.nitrousFactor;
-      } else {
-        this.data.methaneFactor = 0;
-        this.data.nitrousFactor = 0;
-        this.data.carbonFactor = 0;
-        this.data.eGridSubregion = undefined;
-        this.data.totalEmissionOutputRate = undefined;
-      }
-      this.save();
-    }
+  
+  setZipcode() {
+    this.setSubRegionData();
   }
 
-  setSubRegion() {
-    let tmpSubRegion: SubRegionData = this.subregions.find((val) => { return this.data.eGridSubregion === val.subregion; });
-    if (tmpSubRegion) {
-      this.data.totalEmissionOutputRate = tmpSubRegion.carbonFactor;
-      this.data.carbonFactor = tmpSubRegion.carbonFactor;
-      this.data.methaneFactor = tmpSubRegion.methaneFactor;
-      this.data.nitrousFactor = tmpSubRegion.nitrousFactor;
+  setSubRegionData() {
+    this.zipCodeSubRegionData = [];
+
+    let subRegionData: SubRegionData = _.find(this.egridService.subRegionsByZipcode, (val) => this.data.zipcode === val.zip);
+    if (subRegionData) {
+      subRegionData.subregions.forEach(subregion => {
+        if (subregion !== '') {
+          this.zipCodeSubRegionData.push(subregion);
+        }
+      });
+      if (!this.data.eGridSubregion) {
+        // set the first from the subregion list as default
+        this.data.eGridSubregion = this.zipCodeSubRegionData[0];
+      }
+
+      this.hasValidSubRegion = true;
+      if (this.zipCodeSubRegionData.length === 0) {
+        // none found - form select is hidden, set form val to null
+        this.data.eGridSubregion = undefined;
+      } 
+    } else {
+      this.data.eGridSubregion = undefined;
+    }
+
+    this.setSubRegionEmissionsOutput();
+  }
+
+
+  setSubRegionEmissionsOutput() {
+    let subregionEmissions: SubregionEmissions = this.egridService.findEGRIDCO2Emissions(this.data.eGridSubregion);
+    if (subregionEmissions) {
+      this.data.carbonFactor = subregionEmissions.co2Factor;
+      this.data.methaneFactor = subregionEmissions.chFactor;
+      this.data.nitrousFactor = subregionEmissions.n2OFactor;
       this.save();
     }
   }

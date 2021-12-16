@@ -7,10 +7,12 @@ import { MobileTypeProperties } from './co2MobileSavings';
 })
 export class Co2SavingsService {
 
+  currentField: BehaviorSubject<string>;
   baselineData: BehaviorSubject<Array<Co2SavingsData>>;
   modificationData: BehaviorSubject<Array<Co2SavingsData>>;
   energyUnits: BehaviorSubject<string>;
   constructor() {
+    this.currentField = new BehaviorSubject<string>('default');
     this.energyUnits = new BehaviorSubject<string>('MMBtu');
     this.baselineData = new BehaviorSubject<Array<Co2SavingsData>>([{
       energyType: 'fuel',
@@ -153,4 +155,5 @@ export interface Co2SavingsData {
   carbonFactor?: number;
   methaneFactor?: number;
   nitrousFactor?: number;
+  zipcode?: string,
 }
