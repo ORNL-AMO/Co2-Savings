@@ -126,23 +126,41 @@
           </div>
         </div>
       
-        <div *ngIf="zipCodeSubRegionData" class="form-group">
-          <label for="{{'eGridSubregion'+modId+index}}">eGRID Subregion</label>
-          <div *ngIf="zipCodeSubRegionData.length > 1" class="input-group">
-            <select name="{{'eGridSubregion'+modId+index}}" class="form-control" id="{{'eGridSubregion'+modId+index}}"
-              [(ngModel)]="data.eGridSubregion" (change)="setSubRegionEmissionsOutput()" [required]="true"
-               (focus)="focusField('eGridSubregion')">
-              <option *ngFor="let subregion of zipCodeSubRegionData" [ngValue]="subregion">{{subregion}}</option>
-            </select>
-          </div>
-          <div *ngIf="hasValidSubRegion && zipCodeSubRegionData.length < 2" class="text-center small">
-            {{data.eGridSubregion}}
-          </div>
-          <div *ngIf="!hasValidSubRegion || !data.eGridSubregion" class="text-center small">
-            <strong>&mdash; &mdash;</strong>
-          </div>
-        </div>
-      
+        <ng-container *ngIf="zipCodeSubRegionData">
+            <div class="form-group">
+                <label for="{{'eGridSubregion'+modId+index}}">eGRID Subregion</label>
+                <div *ngIf="zipCodeSubRegionData.length > 1" class="input-group">
+                    <select name="{{'eGridSubregion'+modId+index}}" class="form-control" id="{{'eGridSubregion'+modId+index}}"
+                        [(ngModel)]="data.eGridSubregion" (change)="setSubRegionEmissionsOutput()" [required]="true"
+                        (focus)="focusField('eGridSubregion')">
+                        <option *ngFor="let subregion of zipCodeSubRegionData" [ngValue]="subregion">{{subregion}}</option>
+                    </select>
+                </div>
+                <div *ngIf="hasValidSubRegion && zipCodeSubRegionData.length < 2" class="text-center small">
+                    {{data.eGridSubregion}}
+                </div>
+                <div *ngIf="!hasValidSubRegion || !data.eGridSubregion" class="text-center small">
+                    <strong>&mdash; &mdash;</strong>
+                </div>
+            </div>
+
+            <a class="click-link small form-text" [ngClass]="{'disabled-link': !data.selectedEmissionsMarket || (data.selectedEmissionsMarket && data.selectedEmissionsMarket.co2Emissions === undefined)}"
+            (click)="openMarketEmissionsModal()">View Market Emissions Rates</a>
+
+            <div class="form-group">
+                <label for="{{'market'+modId+index}}">Market Emission Rates</label>
+                <div class="input-group">
+                    <select [disabled]="marketEmissionsOptions.length <= 1 || !selected" name="{{'market'+modId+index}}" class="form-control" id="{{'market'+modId+index}}"
+                        [(ngModel)]="data.selectedEmissionsMarket" (change)="setEmissionsFactor()" [required]="true"
+                        (focus)="focusField('market')">
+                        <option *ngFor="let marketEmissionsOption of marketEmissionsOptions" [ngValue]="marketEmissionsOption">{{marketEmissionsOption.display}}</option>
+                    </select>
+                </div>
+            </div>
+    
+        </ng-container>
+
+
       </div>
 
     <div class="form-section" *ngIf="data.energyType == 'fugitive'">
@@ -270,3 +288,25 @@
         </label>
     </div>
 </form>
+
+
+<div *ngIf="selectedSubregionEmissions" bsModal #marketEmissionsModal="bs-modal" class="modal fade" tabindex="-1" role="dialog"
+    aria-labelledby="marketEmissionsModalLabel" aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-header-text">
+                        {{data.eGridSubregion}} Emission Rates
+                    </span>
+                    <button class="close" aria-label="Close" (click)="closeMarketEmissionsModal()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="scroll-item px-4">
+                    <app-market-emissions-table [currentEmissionsMarket]="selectedSubregionEmissions"></app-market-emissions-table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

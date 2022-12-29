@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { MobileTypeProperties } from './co2MobileSavings';
+import { MarketYearEmissions } from './e-grid.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +12,10 @@ export class Co2SavingsService {
   baselineData: BehaviorSubject<Array<Co2SavingsData>>;
   modificationData: BehaviorSubject<Array<Co2SavingsData>>;
   energyUnits: BehaviorSubject<string>;
+  modalOpen: BehaviorSubject<boolean>;
   constructor() {
     this.currentField = new BehaviorSubject<string>('default');
+    this.modalOpen = new BehaviorSubject<boolean>(false);
     this.energyUnits = new BehaviorSubject<string>('MMBtu');
     this.baselineData = new BehaviorSubject<Array<Co2SavingsData>>([{
       energyType: 'fuel',
@@ -151,6 +154,7 @@ export interface Co2SavingsData {
   eGridRegion?: string;
   eGridSubregion?: string;
   totalEmissionOutput: number;
+  selectedEmissionsMarket?: MarketYearEmissions;
   customUnits?: string;
   carbonFactor?: number;
   methaneFactor?: number;

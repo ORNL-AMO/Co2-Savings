@@ -1,0 +1,68 @@
+<div class="col">
+<table class="table table-hover table-striped small" *ngIf="currentEmissionsMarket.locationEmissionRates.length != 0">
+    <thead>
+        <tr>
+            <th colspan="2">
+                Location Emissions Rates
+            </th>
+        </tr>
+        <tr>
+            <th class="w-50">
+                Year
+            </th>
+            <th class="w-50">
+                Emissions Rate <br>(kg CO<sub>2</sub>/kWh)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr
+            *ngFor="let emissionRate of currentEmissionsMarket.locationEmissionRates">
+            <td>
+                {{emissionRate.year}}
+            </td>
+            <td>
+                {{emissionRate.co2Emissions | number}}
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div class="alert alert-warning" *ngIf="currentEmissionsMarket.locationEmissionRates.length == 0">
+    No Location Emissions Rates Found For Subregion
+</div>
+</div>
+<hr>
+<div class="col">
+<table class="table table-hover table-striped small" *ngIf="currentEmissionsMarket.residualEmissionRates.length != 0">
+    <thead>
+        <tr>
+            <th colspan="2">
+                Residual Emissions Rates
+            </th>
+        </tr>
+        <tr>
+            <th class="w-50">
+                Year
+            </th>
+            <th class="w-50">
+                Emissions Rate <br>(kg CO<sub>2</sub>/kWh)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr
+            *ngFor="let emissionRate of currentEmissionsMarket.residualEmissionRates">
+            <td>
+                {{emissionRate.year}}
+            </td>
+            <td>
+                {{emissionRate.co2Emissions | number}}
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div class="alert alert-warning" *ngIf="currentEmissionsMarket.residualEmissionRates.length == 0">
+    No Residual Emissions Rates Found For Subregion
+</div>
+
+</div>

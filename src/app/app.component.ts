@@ -1,5 +1,7 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router'; 
+import { Subscription } from 'rxjs';
+import { Co2SavingsService } from './co2-savings.service';
 import { EGridService } from './e-grid.service';
 
 // declare ga as a function to access the JS code in TS
@@ -25,8 +27,11 @@ export class AppComponent {
       this.setContainerSize();
   }
   headerHeight: number;
+  isModalOpenSub: Subscription;
   baselineSelected: boolean = true;
-  constructor(public router: Router, private eGridService: EGridService){   
+  isModalOpen: boolean;
+
+  constructor(public router: Router, private eGridService: EGridService, private co2SavingsService: Co2SavingsService){   
     this.router.events.subscribe(event => {
        if(event instanceof NavigationEnd){
            gtag('config', 'G-29K0R91S12', 
@@ -38,8 +43,16 @@ export class AppComponent {
      }
   )}
 
-  ngOnInit() {
-    this.eGridService.getAllSubRegions();
+  async ngOnInit() {
+    this.isModalOpenSub = this.co2SavingsService.modalOpen.subscribe(val => {
+      this.isModalOpen = val;
+    });
+
+    await this.eGridService.parseEGridData();
+  }
+
+  ngOnDestroy() {
+    this.isModalOpenSub.unsubscribe();
   }
 
   ngAfterViewInit(){
