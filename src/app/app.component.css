@@ -45,3 +45,7 @@
     background-color: #fff;
     cursor: pointer;      
   }
+
+  .modal-open {
+    z-index: initial !important;
+}

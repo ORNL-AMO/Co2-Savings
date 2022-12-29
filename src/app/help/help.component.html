@@ -94,7 +94,11 @@
           <hr>
         </small>
       </h6>
-      <img src="assets/images/egrid-subregions.png" alt="eGridSubRegions">
+    </div>
+    <div class="my-2" *ngIf="currentField == 'eGridSubregion'">
+      <h6>
+        Market Emission Rates
+      </h6>
     </div>
     <div class="my-2" *ngIf="currentField == 'zipcode'">
       <h6>
@@ -104,6 +108,7 @@
           Enter a vaild Zip Code to find the eGrid Subregion where electricity is generated.
           <hr>
         </small>
+        <img src="assets/egrid-map.png" alt="eGridSubRegions">
       </h6>
     </div>
     

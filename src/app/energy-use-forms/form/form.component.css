@@ -1,0 +1,11 @@
+.click-link {
+    cursor: pointer;
+}
+.disabled-link {
+    color: gray;
+    pointer-events: none;
+}
+
+.disabled-link :hover {
+    text-decoration: none;
+}

@@ -5,11 +5,12 @@
   <div class="p-0 flex-grow-1">
     <div class="row no-gutters h-100">
       <div class="mod-panel col-4 pt-2 scroll-item" [ngStyle]="{'height.px': containerHeight}"
-        [ngClass]="{'modification': baselineSelected }" (click)="selectBaseline()">
+        [ngClass]="{'modification': baselineSelected, 'modal-open': isModalOpen == true }" 
+        (click)="selectBaseline()">
         <app-energy-use-forms [isBaseline]="true" [selected]="baselineSelected"></app-energy-use-forms>
       </div>
       <div class="mod-panel col-4 pt-2 scroll-item" [ngStyle]="{'height.px': containerHeight}"
-        [ngClass]="{'modification': !baselineSelected }" (click)="selectModification()">
+        [ngClass]="{'modification': !baselineSelected, 'modal-open': isModalOpen == true }" (click)="selectModification()">
         <app-energy-use-forms [isBaseline]="false" [selected]="!baselineSelected"></app-energy-use-forms>
       </div>
 

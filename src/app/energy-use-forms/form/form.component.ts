@@ -1,11 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Co2SavingsData, Co2SavingsService } from 'src/app/co2-savings.service';
 import { FuelTypeProperties, OtherFuel, otherFuels } from 'src/app/co2FuelSavingsFuels';
 import { FugitiveTypeProperties, Fugitive, fugitives } from 'src/app/co2FugitiveSavings';
 import { customEmissions, Custom, CustomTypeProperties } from 'src/app/co2CustomSavings';
 import { MobileEmission, MobileTypeProperties, mobileEmissions } from 'src/app/co2MobileSavings';
-import { EGridService, SubRegionData, SubregionEmissions } from 'src/app/e-grid.service';
+import { ModalDirective } from 'ngx-bootstrap/modal';
+import { EGridService, SubRegionData, SubregionEmissions, MarketYearEmissions } from 'src/app/e-grid.service';
 import * as _ from 'lodash';
 
 @Component({
@@ -20,7 +21,8 @@ export class FormComponent implements OnInit {
   isBaseline: boolean;
   @Input()
   selected: boolean;
-
+  @ViewChild('marketEmissionsModal', { static: false }) public marketEmissionsModal: ModalDirective;
+  
   data: Co2SavingsData;
   dataSub: Subscription;
   modId: string;
@@ -31,16 +33,19 @@ export class FormComponent implements OnInit {
   fuelOptions: Array<FuelTypeProperties>;
   mobileOptions: Array<MobileTypeProperties>;
   fugitiveOptions: Array<FugitiveTypeProperties>;
+  marketEmissionsOptions: Array<MarketYearEmissions> = [];
   customOptions: CustomTypeProperties;
   isFormChange: boolean = false;
   energyUnitsSub: Subscription;
   energyUnits: string;
   mobileUnits: string = 'gal';
   fugitiveUnits: string = 'lb';
+  selectedSubregionEmissions: SubregionEmissions;
 
   hasValidSubRegion: boolean;
   zipCodeSubRegionData: Array<string>;
-  constructor(private co2SavingsService: Co2SavingsService, private egridService: EGridService) { }
+  constructor(private co2SavingsService: Co2SavingsService, 
+    private cd: ChangeDetectorRef, private egridService: EGridService) { }
 
   ngOnInit(): void {
     this.energyUnitsSub = this.co2SavingsService.energyUnits.subscribe(val => {
@@ -130,6 +135,7 @@ export class FormComponent implements OnInit {
     this.data.methaneFactor = 0;
     this.data.nitrousFactor = 0;
     this.data.carbonFactor = 0;
+    this.data.zipcode = "00000"
     this.setSubRegionData();
     this.save();
   }
@@ -215,31 +221,37 @@ export class FormComponent implements OnInit {
 
   setSubRegionData() {
     this.zipCodeSubRegionData = [];
-
     let subRegionData: SubRegionData = _.find(this.egridService.subRegionsByZipcode, (val) => this.data.zipcode === val.zip);
     if (subRegionData) {
+      this.hasValidSubRegion = true;
       subRegionData.subregions.forEach(subregion => {
-        if (subregion !== '') {
+        if (subregion) {
           this.zipCodeSubRegionData.push(subregion);
         }
       });
-      if (!this.data.eGridSubregion) {
-        // set the first from the subregion list as default
-        this.data.eGridSubregion = this.zipCodeSubRegionData[0];
-      }
-
-      this.hasValidSubRegion = true;
-      if (this.zipCodeSubRegionData.length === 0) {
-        // none found - form select is hidden, set form val to null
-        this.data.eGridSubregion = undefined;
-      } 
-    } else {
-      this.data.eGridSubregion = undefined;
+      this.data.eGridSubregion = this.zipCodeSubRegionData[0];
+      this.setMarketEmissionsOptions();
     }
 
-    this.setSubRegionEmissionsOutput();
+    if (this.data.energyType != 'electricity') {
+      this.setSubRegionEmissionsOutput();
+    }
   }
 
+  setMarketEmissionsOptions() {
+    this.selectedSubregionEmissions = this.egridService.co2Emissions.find((val) => { return this.data.eGridSubregion === val.subregion});
+    if (this.selectedSubregionEmissions) {
+      this.marketEmissionsOptions = this.selectedSubregionEmissions.locationEmissionRates.concat(this.selectedSubregionEmissions.residualEmissionRates);
+      this.data.selectedEmissionsMarket = this.marketEmissionsOptions[0];
+      this.setEmissionsFactor();
+      this.save();
+    }
+  }
+
+  setEmissionsFactor() {
+    this.data.carbonFactor = this.data.selectedEmissionsMarket.co2Emissions;
+    this.cd.detectChanges();
+  }
 
   setSubRegionEmissionsOutput() {
     let subregionEmissions: SubregionEmissions = this.egridService.findEGRIDCO2Emissions(this.data.eGridSubregion);
@@ -294,5 +306,15 @@ export class FormComponent implements OnInit {
       modificationData[this.index] = this.data;
       this.co2SavingsService.modificationData.next(modificationData);
     }
+  }
+
+  openMarketEmissionsModal() {
+    this.marketEmissionsModal.show();
+    this.co2SavingsService.modalOpen.next(true);
+  }
+
+  closeMarketEmissionsModal() {
+    this.marketEmissionsModal.hide();
+    this.co2SavingsService.modalOpen.next(false);
   }
 }
