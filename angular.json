@@ -72,18 +72,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "Co2-Savings:build"
+            "buildTarget": "Co2-Savings:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "Co2-Savings:build:production"
+              "buildTarget": "Co2-Savings:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "Co2-Savings:build"
+            "buildTarget": "Co2-Savings:build"
           }
         },
         "test": {
