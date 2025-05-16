@@ -4,9 +4,10 @@ import { Subscription } from 'rxjs';
 import { Co2SavingsData, Co2SavingsService } from '../co2-savings.service';
 
 @Component({
-  selector: 'app-results',
-  templateUrl: './results.component.html',
-  styleUrls: ['./results.component.css']
+    selector: 'app-results',
+    templateUrl: './results.component.html',
+    styleUrls: ['./results.component.css'],
+    standalone: false
 })
 export class ResultsComponent implements OnInit {
 

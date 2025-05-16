@@ -3,9 +3,10 @@ import { Subscription } from 'rxjs';
 import { Co2SavingsData, Co2SavingsService } from '../co2-savings.service';
 
 @Component({
-  selector: 'app-energy-use-forms',
-  templateUrl: './energy-use-forms.component.html',
-  styleUrls: ['./energy-use-forms.component.css']
+    selector: 'app-energy-use-forms',
+    templateUrl: './energy-use-forms.component.html',
+    styleUrls: ['./energy-use-forms.component.css'],
+    standalone: false
 })
 export class EnergyUseFormsComponent implements OnInit {
   @Input()
