@@ -37,7 +37,9 @@ export class EGridService {
         //0: SUBRGN
         //1: YEAR
         //2: CATEGORY
-        //3: CO2e
+        //3: CO2
+        //4: CH4
+        //5: N2O
         let sheetTwo = XLSX.utils.sheet_to_json(wb.Sheets["eGrid_co2"], { raw: false });
         this.setCo2Emissions(sheetTwo);
       });
@@ -67,7 +69,7 @@ export class EGridService {
     csvResults.forEach(result => {
       let subregion: string = result['SUBRGN'];
       if (subregion) {
-        let co2Emissions: number = Number(result['CO2e']);
+        let co2Emissions: number = Number(result['CO2']) / 1000;
         let year: number = Number(result['YEAR']);
         let category: 'LocationMix' | 'ResidualMix' = result['CATEGORY'];
         subregionEmissions = this.addEmissionRate(subregion, co2Emissions, year, category, subregionEmissions);
@@ -84,13 +86,15 @@ export class EGridService {
         subregionEmissions[subregionIndex].locationEmissionRates.push({
           year: year,
           display: `${year} Location Rate`,
-          co2Emissions: co2Emissions
+          co2Emissions: co2Emissions,
+          category: 'LocationMix'
         })
       } else {
         subregionEmissions[subregionIndex].residualEmissionRates.push({
           year: year,
           display: `${year} Residual Rate`,
-          co2Emissions: co2Emissions
+          co2Emissions: co2Emissions,
+          category: 'ResidualMix'
         })
       }
     } else {
@@ -100,7 +104,8 @@ export class EGridService {
           locationEmissionRates: [{
             year: year,
             display: `${year} Location Rate`,
-            co2Emissions: co2Emissions
+            co2Emissions: co2Emissions,
+            category: 'LocationMix'
           }],
           residualEmissionRates: new Array()
         })
@@ -111,7 +116,8 @@ export class EGridService {
           residualEmissionRates: [{
             year: year,
             display: `${year} Residual Rate`,
-            co2Emissions: co2Emissions
+            co2Emissions: co2Emissions,
+            category: 'ResidualMix'
           }]
         })
       }
@@ -169,4 +175,9 @@ export interface SubregionEmissions {
 }
 
 
-export interface MarketYearEmissions { display: string, co2Emissions: number, year: number }
+export interface MarketYearEmissions {
+  display: string, 
+  co2Emissions: number, 
+  year: number, 
+  category: 'LocationMix' | 'ResidualMix' | 'Projection' 
+}
