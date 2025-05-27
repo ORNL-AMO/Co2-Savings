@@ -157,14 +157,21 @@
                             [ngValue]="locationEmission">
                             {{locationEmission.year}} - {{locationEmission.co2Emissions | number:"1.0-2"}} kg CO<sub>2</sub>/kWh
                         </option>
-                        <optgroup label="Location-Based Emissions">
-                            <option *ngFor="let marketEmissionsOption of selectedSubregionEmissions.locationEmissionRates" [ngValue]="marketEmissionsOption">
+                        <optgroup *ngIf="selectedSubregionEmissions.locationEmissionRates.length != 0" label="Location-Based Emissions">
+                            <option *ngFor="let marketEmissionsOption of selectedSubregionEmissions.locationEmissionRates"
+                                [ngValue]="marketEmissionsOption">
                                 {{marketEmissionsOption.display}}
                             </option>
-                        <optgroup label="Market-Based Emissions (Residual Mix)">
-                            <option *ngFor="let marketEmissionsOption of selectedSubregionEmissions.residualEmissionRates" [ngValue]="marketEmissionsOption">                           
+                        <optgroup *ngIf="selectedSubregionEmissions.residualEmissionRates.length != 0" label="Market-Based Emissions (Residual Mix)">
+                            <option *ngFor="let marketEmissionsOption of selectedSubregionEmissions.residualEmissionRates"
+                                [ngValue]="marketEmissionsOption">
                                 {{marketEmissionsOption.display}}
                             </option>
+                        <optgroup *ngIf="selectedSubregionEmissions.projectionEmissionRates.length != 0" label="Projection"></optgroup>
+                        <option *ngFor="let marketEmissionsOption of selectedSubregionEmissions.projectionEmissionRates"
+                            [ngValue]="marketEmissionsOption">
+                            {{marketEmissionsOption.display}}
+                        </option>
                     </select>
                 </div>
             </div>
