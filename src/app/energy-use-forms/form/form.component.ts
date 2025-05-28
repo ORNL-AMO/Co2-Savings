@@ -10,9 +10,10 @@ import { EGridService, SubRegionData, SubregionEmissions, MarketYearEmissions } 
 import * as _ from 'lodash';
 
 @Component({
-  selector: 'app-form',
-  templateUrl: './form.component.html',
-  styleUrls: ['./form.component.css']
+    selector: 'app-form',
+    templateUrl: './form.component.html',
+    styleUrls: ['./form.component.css'],
+    standalone: false
 })
 export class FormComponent implements OnInit {
   @Input()

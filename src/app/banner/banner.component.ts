@@ -3,12 +3,13 @@ import { Subscription } from 'rxjs';
 import { Co2SavingsService } from '../co2-savings.service';
 
 @Component({
-  selector: 'app-banner',
-  templateUrl: './banner.component.html',
-  styleUrls: ['./banner.component.css'],
-  host: {
-    '(document:click)': 'documentClick($event)',
-  }
+    selector: 'app-banner',
+    templateUrl: './banner.component.html',
+    styleUrls: ['./banner.component.css'],
+    host: {
+        '(document:click)': 'documentClick($event)',
+    },
+    standalone: false
 })
 export class BannerComponent implements OnInit {
 
