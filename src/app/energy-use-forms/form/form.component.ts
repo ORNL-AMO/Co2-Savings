@@ -217,7 +217,9 @@ export class FormComponent implements OnInit {
 
   
   setZipcode() {
+    // gather data for any emission factor option
     this.setSubRegionData();
+    // todo this.setSubregionProjectionData();
   }
 
   setSubRegionData() {
@@ -239,6 +241,18 @@ export class FormComponent implements OnInit {
     }
   }
 
+  setSubRegionProjectionData() {
+    // todo very similar to above except this.egridService.projectionSubRegionsByZipcode (built in egridService) is used
+    // todo set this.data.egridSubregion BUT it is actually GEA region
+  }
+
+  changeElectricityEmissionsFactor() {
+    // todo on dropdown change
+    // either use default emissions set from setSubRegionData or call setProjectionEmissionsOptions() to replace
+  }
+
+
+
   setMarketEmissionsOptions() {
     this.selectedSubregionEmissions = this.egridService.co2Emissions.find((val) => { return this.data.eGridSubregion === val.subregion});
     if (this.selectedSubregionEmissions) {
@@ -247,6 +261,12 @@ export class FormComponent implements OnInit {
       this.setEmissionsFactor();
       this.save();
     }
+  }
+
+   setProjectionEmissionsOptions() {
+    // todo very similar to above but you're actually comparing the GEA as val.subregion to  in the find()
+    this.selectedSubregionEmissions = this.egridService.co2Emissions.find((val) => { return this.data.eGridSubregion === val.subregion});
+   
   }
 
   setEmissionsFactor() {
@@ -263,6 +283,7 @@ export class FormComponent implements OnInit {
       this.save();
     }
   }
+  
   setMobileOptions() {
     let tmpMobile: MobileEmission = this.mobileEmissions.find((val) => { return this.data.energySource === val.energySource; });
     if (tmpMobile) {

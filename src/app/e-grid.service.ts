@@ -43,6 +43,9 @@ export class EGridService {
         //5: N2O
         let sheetTwo = XLSX.utils.sheet_to_json(wb.Sheets["eGrid_co2"], { raw: false });
         this.setCo2Emissions(sheetTwo);
+        // todo process projections
+        let sheetThree = XLSX.utils.sheet_to_json(wb.Sheets["eGrid_GEA_zipcode_lookup"], { raw: false });
+        this.setProjectionRegionsByZip(sheetThree)
       });
   }
 
@@ -62,6 +65,11 @@ export class EGridService {
       }
     });
     this.subRegionsByZipcode = subRegionsByZipcode;
+  }
+  
+  setProjectionRegionsByZip(fileData: Array<any>) {
+    // todo process projections for lookup
+    this.GEARegionsByZipcode = new Array<SubRegionData>();
   }
 
 
