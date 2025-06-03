@@ -10,6 +10,7 @@ export class EGridService {
   zipCodeLookup;
   allZipcodesMapped: Array<any>;
   subRegionsByZipcode: Array<SubRegionData>;
+  GEARegionsByZipcode: Array<SubRegionData>;
   co2Emissions: Array<SubregionEmissions>;
 
   constructor() {}
@@ -149,16 +150,18 @@ export class EGridService {
     if (subregionEmissions[subregionIndex]) {
       subregionEmissions[subregionIndex].residualEmissionRates = _.orderBy(subregionEmissions[subregionIndex].residualEmissionRates, emissionRate => emissionRate.year);
       subregionEmissions[subregionIndex].locationEmissionRates = _.orderBy(subregionEmissions[subregionIndex].locationEmissionRates, emissionRate => emissionRate.year);
+      subregionEmissions[subregionIndex].projectionEmissionRates = _.orderBy(subregionEmissions[subregionIndex].projectionEmissionRates, emissionRate => emissionRate.year);
     }
     return subregionEmissions;
   }
 
 
-  getEmissionsRate(subregion: string, year: number): { marketRate: number, locationRate: number } {
+  getEmissionsRate(subregion: string, year: number): { marketRate: number, locationRate: number, projectionRate: number } {
     let subregionEmissions: SubregionEmissions = this.co2Emissions.find(emissions => { return emissions.subregion == subregion });
     if (subregionEmissions) {
       let marketRate: number = 0;
       let locationRate: number = 0;
+      let projectionRate: number = 0;
       if (subregionEmissions.locationEmissionRates.length != 0) {
         let closestYearRate: { co2Emissions: number, year: number } = _.minBy(subregionEmissions.locationEmissionRates, (emissionRate: { co2Emissions: number, year: number }) => {
           return Math.abs(emissionRate.year - year);
@@ -171,9 +174,15 @@ export class EGridService {
         });
         marketRate = closestYearRate.co2Emissions;
       }
-      return { marketRate: marketRate, locationRate: locationRate };
+      if (subregionEmissions.projectionEmissionRates.length != 0) {
+        let closestYearRate: { co2Emissions: number, year: number } = _.minBy(subregionEmissions.projectionEmissionRates, (emissionRate: { co2Emissions: number, year: number }) => {
+          return Math.abs(emissionRate.year - year);
+        });
+        projectionRate = closestYearRate.co2Emissions;
+      }
+      return { marketRate: marketRate, locationRate: locationRate, projectionRate: projectionRate};
     }
-    return { marketRate: 0, locationRate: 0 };
+    return { marketRate: 0, locationRate: 0, projectionRate: 0 };
   }
 
 }
