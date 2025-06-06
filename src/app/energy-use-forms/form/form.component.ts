@@ -44,6 +44,7 @@ export class FormComponent implements OnInit {
   selectedSubregionEmissions: SubregionEmissions;  
   selectedProjectedEmissions: SubregionEmissions;
   selectedEmissions: Array<MarketYearEmissions>;
+  hasProjectedEmissions: boolean = false;
 
   hasValidSubRegion: boolean;
   zipCodeSubRegionData: Array<string>;
@@ -291,9 +292,12 @@ export class FormComponent implements OnInit {
    setProjectionEmissionsOptions() {
     this.selectedProjectedEmissions = this.egridService.co2Emissions.find((val) => { return this.data.geaRegion === val.subregion});
     if (this.selectedProjectedEmissions) {   
+      this.hasProjectedEmissions = true;
       this.selectedEmissions = this.selectedProjectedEmissions.projectionEmissionRates;
       this.setEmissionsFactor();
       this.save();
+    } else {      
+      this.hasProjectedEmissions = false
     }
   }
 

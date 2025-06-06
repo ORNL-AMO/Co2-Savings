@@ -161,7 +161,7 @@
                         (focus)="focusField('factors')">
                         <option value="Location">Location</option>
                         <option value="Residual">Market (Residual Mix)</option>
-                        <option value="Projection">Projection</option>
+                        <option *ngIf="hasProjectedEmissions" value="Projection">Projection</option>
                     </select>
                 </div>
             </div>
