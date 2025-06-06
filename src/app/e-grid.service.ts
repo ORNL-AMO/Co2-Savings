@@ -10,7 +10,7 @@ export class EGridService {
   zipCodeLookup;
   allZipcodesMapped: Array<any>;
   subRegionsByZipcode: Array<SubRegionData>;
-  GEARegionsByZipcode: Array<SubRegionData>;
+  projectionSubRegionsByZipcode: Array<SubRegionData>;
   co2Emissions: Array<SubregionEmissions>;
 
   constructor() { }
@@ -36,14 +36,13 @@ export class EGridService {
         this.setSubRegionsByZip(sheetOne)
 
 
-        // todo process projections
         //GEA data
         //0: ZIP
         //1: state  
         //2: GEA Region 
         //3: eGRID Subregion
-        // let sheetOne = XLSX.utils.sheet_to_json(wb.Sheets["eGrid_GEA_zipcode_lookup"], { raw: false });
-        // this.setRegionsByZip(sheetOne);
+        let sheetTwo = XLSX.utils.sheet_to_json(wb.Sheets["eGrid_GEA_zipcode_lookup"], { raw: false });
+        this.setProjectionSRegionsByZip(sheetTwo);
 
 
         //eGrid data
@@ -53,8 +52,8 @@ export class EGridService {
         //3: CO2
         //4: CH4
         //5: N2O
-        let sheetTwo = XLSX.utils.sheet_to_json(wb.Sheets["eGrid_co2"], { raw: false });
-        this.setCo2Emissions(sheetTwo);
+        let sheetThree = XLSX.utils.sheet_to_json(wb.Sheets["eGrid_co2"], { raw: false });
+        this.setCo2Emissions(sheetThree);
 
 
       });
@@ -78,22 +77,21 @@ export class EGridService {
     this.subRegionsByZipcode = subRegionsByZipcode;
   }
 
-  setRegionsByZip(fileData: Array<any>) {
-    // todo process projections for lookup
-    let subRegionsByZipcode = new Array<SubRegionData>();
+  setProjectionSRegionsByZip(fileData: Array<any>) {
+    let projectionSubRegionsByZipcode = new Array<SubRegionData>();
     fileData.forEach(result => {
       if (result['ZIP (character)']) {
-        subRegionsByZipcode.push({
+        projectionSubRegionsByZipcode.push({
           zip: result['ZIP (character)'],
           state: result['state'],
           subregions: [
-            result['Generation and Emission Assessment (GEA) region'],
+            result['Generation and Emission Assessment (GEA) region '],
             result['eGrid Region'],
           ]
         })
       }
     });
-    this.subRegionsByZipcode = subRegionsByZipcode;
+    this.projectionSubRegionsByZipcode = projectionSubRegionsByZipcode;
   }
 
 

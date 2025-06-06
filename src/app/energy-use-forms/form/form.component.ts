@@ -41,11 +41,13 @@ export class FormComponent implements OnInit {
   energyUnits: string;
   mobileUnits: string = 'gal';
   fugitiveUnits: string = 'lb';
-  selectedSubregionEmissions: SubregionEmissions;
+  selectedSubregionEmissions: SubregionEmissions;  
+  selectedProjectedEmissions: SubregionEmissions;
   selectedEmissions: Array<MarketYearEmissions>;
 
   hasValidSubRegion: boolean;
   zipCodeSubRegionData: Array<string>;
+  zipCodeGEARegionData: Array<string>;
   constructor(private co2SavingsService: Co2SavingsService, 
     private cd: ChangeDetectorRef, private egridService: EGridService) { }
 
@@ -139,6 +141,7 @@ export class FormComponent implements OnInit {
     this.data.carbonFactor = 0;
     this.data.zipcode = "00000"
     this.data.emissionFactors = 'Location';
+    this.data.geaRegion = undefined;
     this.setSubRegionData();
     this.save();
   }
@@ -221,7 +224,7 @@ export class FormComponent implements OnInit {
   setZipcode() {
     // gather data for any emission factor option
     this.setSubRegionData();
-    // todo this.setSubregionProjectionData();
+    this.setSubRegionProjectionData();
   }
 
   setSubRegionData() {
@@ -244,17 +247,31 @@ export class FormComponent implements OnInit {
   }
 
   setSubRegionProjectionData() {
-    // todo very similar to above except this.egridService.projectionSubRegionsByZipcode (built in egridService) is used
-    // todo set this.data.egridSubregion BUT it is actually GEA region
+    this.zipCodeGEARegionData = [];
+    let subRegionData: SubRegionData = _.find(this.egridService.projectionSubRegionsByZipcode, (val) => this.data.zipcode === val.zip);
+    if (subRegionData) {
+      this.hasValidSubRegion = true;
+      subRegionData.subregions.forEach(subregion => {
+        if (subregion) {
+          this.zipCodeGEARegionData.push(subregion);
+        }
+      });
+      this.data.geaRegion = this.zipCodeGEARegionData[0];
+      this.setProjectionEmissionsOptions();
+    }
+
+    if (this.data.energyType != 'electricity') {
+      this.setSubRegionEmissionsOutput();
+    }
   }
 
   changeElectricityEmissionsFactor(selectedFactor: string) {
-    console.log('changeElectricityEmissionsFactor called with: ', selectedFactor);
     if (selectedFactor === 'Location') {
       this.selectedEmissions = this.selectedSubregionEmissions.locationEmissionRates;
     } else if (selectedFactor === 'Residual') {      
       this.selectedEmissions = this.selectedSubregionEmissions.residualEmissionRates;
     } else if (selectedFactor === 'Projection') {
+      this.selectedEmissions = this.selectedProjectedEmissions.projectionEmissionRates;
     }
     this.data.selectedEmissionsMarket = this.selectedEmissions[0]; 
 
@@ -272,9 +289,12 @@ export class FormComponent implements OnInit {
   }
 
    setProjectionEmissionsOptions() {
-    // todo very similar to above but you're actually comparing the GEA as val.subregion to  in the find()
-    this.selectedSubregionEmissions = this.egridService.co2Emissions.find((val) => { return this.data.eGridSubregion === val.subregion});
-   
+    this.selectedProjectedEmissions = this.egridService.co2Emissions.find((val) => { return this.data.geaRegion === val.subregion});
+    if (this.selectedProjectedEmissions) {   
+      this.selectedEmissions = this.selectedProjectedEmissions.projectionEmissionRates;
+      this.setEmissionsFactor();
+      this.save();
+    }
   }
 
   setEmissionsFactor() {

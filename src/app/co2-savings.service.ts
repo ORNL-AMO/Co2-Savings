@@ -160,5 +160,6 @@ export interface Co2SavingsData {
   methaneFactor?: number;
   nitrousFactor?: number;
   zipcode?: string,
-  emissionFactors?: 'Location' | 'Residual' | 'Projection'
+  emissionFactors?: 'Location' | 'Residual' | 'Projection',
+  geaRegion?: string,
 }
