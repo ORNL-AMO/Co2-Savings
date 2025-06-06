@@ -147,6 +147,16 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <label for="{{'geaRegion'+modId+index}}">Generation and Emission Assessment (GEA) Region</label>
+                <div *ngIf="hasValidGEARegion" class="text-center small">
+                    {{data.geaRegion}}
+                </div>
+                <div *ngIf="!hasValidGEARegion || !data.geaRegion" class="text-center small">
+                    <strong>&mdash; &mdash;</strong>
+                </div>
+            </div>
+
             <a class="click-link small form-text"
                 [ngClass]="{'disabled-link': !data.selectedEmissionsMarket || (data.selectedEmissionsMarket && data.selectedEmissionsMarket.co2Emissions === undefined)}"
                 (click)="openMarketEmissionsModal()">View Emissions Rates
@@ -161,7 +171,7 @@
                         (focus)="focusField('factors')">
                         <option value="Location">Location</option>
                         <option value="Residual">Market (Residual Mix)</option>
-                        <option *ngIf="hasProjectedEmissions" value="Projection">Projection</option>
+                        <option *ngIf="hasValidGEARegion" value="Projection">Projection</option>
                     </select>
                 </div>
             </div>
@@ -182,21 +192,6 @@
                             [ngValue]="emissionsOption">
                             {{emissionsOption.display}}
                         </option>
-
-                        <!-- <optgroup *ngIf="selectedSubregionEmissions.locationEmissionRates.length != 0"
-                            label="Location-Based Emissions">
-                            <option
-                                *ngFor="let marketEmissionsOption of selectedSubregionEmissions.locationEmissionRates"
-                                [ngValue]="marketEmissionsOption">
-                                {{marketEmissionsOption.display}}
-                            </option>
-                        <optgroup *ngIf="selectedSubregionEmissions.residualEmissionRates.length != 0"
-                            label="Market-Based Emissions (Residual Mix)">
-                            <option
-                                *ngFor="let marketEmissionsOption of selectedSubregionEmissions.residualEmissionRates"
-                                [ngValue]="marketEmissionsOption">
-                                {{marketEmissionsOption.display}}
-                            </option> -->
                     </select>
                 </div>
             </div>
