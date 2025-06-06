@@ -13,10 +13,10 @@ export class EGridService {
   GEARegionsByZipcode: Array<SubRegionData>;
   co2Emissions: Array<SubregionEmissions>;
 
-  constructor() {}
+  constructor() { }
 
   findEGRIDCO2Emissions(eGridSubregion: string): SubregionEmissions {
-    return  _.find(this.co2Emissions, (val) => val.subregion.includes(eGridSubregion));
+    return _.find(this.co2Emissions, (val) => val.subregion.includes(eGridSubregion));
   }
 
 
@@ -34,6 +34,18 @@ export class EGridService {
         // 5: "eGRID Subregion #3"]
         let sheetOne = XLSX.utils.sheet_to_json(wb.Sheets["eGrid_zipcode_lookup"], { raw: false });
         this.setSubRegionsByZip(sheetOne)
+
+
+        // todo process projections
+        //GEA data
+        //0: ZIP
+        //1: state  
+        //2: GEA Region 
+        //3: eGRID Subregion
+        // let sheetOne = XLSX.utils.sheet_to_json(wb.Sheets["eGrid_GEA_zipcode_lookup"], { raw: false });
+        // this.setRegionsByZip(sheetOne);
+
+
         //eGrid data
         //0: SUBRGN
         //1: YEAR
@@ -43,9 +55,8 @@ export class EGridService {
         //5: N2O
         let sheetTwo = XLSX.utils.sheet_to_json(wb.Sheets["eGrid_co2"], { raw: false });
         this.setCo2Emissions(sheetTwo);
-        // todo process projections
-        let sheetThree = XLSX.utils.sheet_to_json(wb.Sheets["eGrid_GEA_zipcode_lookup"], { raw: false });
-        this.setProjectionRegionsByZip(sheetThree)
+
+
       });
   }
 
@@ -66,10 +77,23 @@ export class EGridService {
     });
     this.subRegionsByZipcode = subRegionsByZipcode;
   }
-  
-  setProjectionRegionsByZip(fileData: Array<any>) {
+
+  setRegionsByZip(fileData: Array<any>) {
     // todo process projections for lookup
-    this.GEARegionsByZipcode = new Array<SubRegionData>();
+    let subRegionsByZipcode = new Array<SubRegionData>();
+    fileData.forEach(result => {
+      if (result['ZIP (character)']) {
+        subRegionsByZipcode.push({
+          zip: result['ZIP (character)'],
+          state: result['state'],
+          subregions: [
+            result['Generation and Emission Assessment (GEA) region'],
+            result['eGrid Region'],
+          ]
+        })
+      }
+    });
+    this.subRegionsByZipcode = subRegionsByZipcode;
   }
 
 
@@ -105,7 +129,7 @@ export class EGridService {
           co2Emissions: co2Emissions,
           category: 'ResidualMix'
         })
-      }  else if (category == 'Projection') {
+      } else if (category == 'Projection') {
         subregionEmissions[subregionIndex].projectionEmissionRates.push({
           year: year,
           display: `${year} Projected Rate`,
@@ -149,7 +173,7 @@ export class EGridService {
             co2Emissions: co2Emissions,
             category: 'Projection'
           }],
-          
+
         })
       }
 
@@ -188,7 +212,7 @@ export class EGridService {
         });
         projectionRate = closestYearRate.co2Emissions;
       }
-      return { marketRate: marketRate, locationRate: locationRate, projectionRate: projectionRate};
+      return { marketRate: marketRate, locationRate: locationRate, projectionRate: projectionRate };
     }
     return { marketRate: 0, locationRate: 0, projectionRate: 0 };
   }
@@ -208,7 +232,7 @@ export interface SubRegionData {
 export interface SubregionEmissions {
   subregion: string,
   locationEmissionRates: Array<MarketYearEmissions>,
-  residualEmissionRates: Array<MarketYearEmissions>,  
+  residualEmissionRates: Array<MarketYearEmissions>,
   projectionEmissionRates: Array<MarketYearEmissions>,
   co2Factor?: number,
   chFactor?: number,
@@ -217,8 +241,8 @@ export interface SubregionEmissions {
 
 
 export interface MarketYearEmissions {
-  display: string, 
-  co2Emissions: number, 
-  year: number, 
-  category: 'LocationMix' | 'ResidualMix' | 'Projection' 
+  display: string,
+  co2Emissions: number,
+  year: number,
+  category: 'LocationMix' | 'ResidualMix' | 'Projection'
 }

@@ -152,45 +152,54 @@
                 (click)="openMarketEmissionsModal()">View Emissions Rates
             </a>
 
-            <!--  todo add emission factor dropdown "Emission Factors": Location, Market, Projection -->
-            
-            @if ('is Location or Market') {
-            <!--  todo render basic dropdown for this-->
+            <div class="form-group">
+                <label for="{{'factors'+modId+index}}">Emission Factors</label>
+                <div class="input-group">
+                    <select name="{{'factors'+modId+index}}" class="form-control" id="{{'factors'+modId+index}}"
+                        [(ngModel)]="data.emissionFactors" [required]="true"
+                        (change)="changeElectricityEmissionsFactor(data.emissionFactors)"
+                        (focus)="focusField('factors')">
+                        <option value="Location">Location</option>
+                        <option value="Residual">Market (Residual Mix)</option>
+                        <option value="Projection">Projection</option>
+                    </select>
+                </div>
+            </div>
 
             <div class="form-group">
                 <label for="{{'market'+modId+index}}">Emission Rates</label>
+                <div class="input-group">
+                    <select [disabled]="marketEmissionsOptions.length <= 1 || !selected" name="{{'market'+modId+index}}"
+                        class="form-control" id="{{'market'+modId+index}}" [(ngModel)]="data.selectedEmissionsMarket"
+                        (change)="setEmissionsFactor()" [required]="true" (focus)="focusField('market')">
+                        <option *ngFor="let locationEmission of data.selectedEmissionsMarket.locationEmissionRates"
+                            [ngValue]="locationEmission">
+                            {{locationEmission.year}} - {{locationEmission.co2Emissions | number:"1.0-2"}} kg
+                            CO<sub>2</sub>/kWh
+                        </option>
 
-            </div>
-            } @else if ('is projection') {
-            <!--  todo render grouped version  -->
-            }
-        
-        <div class="form-group">
-            <label for="{{'market'+modId+index}}">Emission Rates</label>
-            <div class="input-group">
-                <select [disabled]="marketEmissionsOptions.length <= 1 || !selected" name="{{'market'+modId+index}}"
-                    class="form-control" id="{{'market'+modId+index}}" [(ngModel)]="data.selectedEmissionsMarket"
-                    (change)="setEmissionsFactor()" [required]="true" (focus)="focusField('market')">
-                    <option *ngFor="let locationEmission of data.selectedEmissionsMarket.locationEmissionRates"
-                        [ngValue]="locationEmission">
-                        {{locationEmission.year}} - {{locationEmission.co2Emissions | number:"1.0-2"}} kg
-                        CO<sub>2</sub>/kWh
-                    </option>
-                    <optgroup *ngIf="selectedSubregionEmissions.locationEmissionRates.length != 0"
-                        label="Location-Based Emissions">
-                        <option *ngFor="let marketEmissionsOption of selectedSubregionEmissions.locationEmissionRates"
-                            [ngValue]="marketEmissionsOption">
-                            {{marketEmissionsOption.display}}
+                        <option *ngFor="let emissionsOption of selectedEmissions"
+                            [ngValue]="emissionsOption">
+                            {{emissionsOption.display}}
                         </option>
-                    <optgroup *ngIf="selectedSubregionEmissions.residualEmissionRates.length != 0"
-                        label="Market-Based Emissions (Residual Mix)">
-                        <option *ngFor="let marketEmissionsOption of selectedSubregionEmissions.residualEmissionRates"
-                            [ngValue]="marketEmissionsOption">
-                            {{marketEmissionsOption.display}}
-                        </option>
-                </select>
+
+                        <!-- <optgroup *ngIf="selectedSubregionEmissions.locationEmissionRates.length != 0"
+                            label="Location-Based Emissions">
+                            <option
+                                *ngFor="let marketEmissionsOption of selectedSubregionEmissions.locationEmissionRates"
+                                [ngValue]="marketEmissionsOption">
+                                {{marketEmissionsOption.display}}
+                            </option>
+                        <optgroup *ngIf="selectedSubregionEmissions.residualEmissionRates.length != 0"
+                            label="Market-Based Emissions (Residual Mix)">
+                            <option
+                                *ngFor="let marketEmissionsOption of selectedSubregionEmissions.residualEmissionRates"
+                                [ngValue]="marketEmissionsOption">
+                                {{marketEmissionsOption.display}}
+                            </option> -->
+                    </select>
+                </div>
             </div>
-        </div>
 
         </ng-container>
 

@@ -42,6 +42,7 @@ export class FormComponent implements OnInit {
   mobileUnits: string = 'gal';
   fugitiveUnits: string = 'lb';
   selectedSubregionEmissions: SubregionEmissions;
+  selectedEmissions: Array<MarketYearEmissions>;
 
   hasValidSubRegion: boolean;
   zipCodeSubRegionData: Array<string>;
@@ -137,6 +138,7 @@ export class FormComponent implements OnInit {
     this.data.nitrousFactor = 0;
     this.data.carbonFactor = 0;
     this.data.zipcode = "00000"
+    this.data.emissionFactors = 'Location';
     this.setSubRegionData();
     this.save();
   }
@@ -246,18 +248,24 @@ export class FormComponent implements OnInit {
     // todo set this.data.egridSubregion BUT it is actually GEA region
   }
 
-  changeElectricityEmissionsFactor() {
-    // todo on dropdown change
-    // either use default emissions set from setSubRegionData or call setProjectionEmissionsOptions() to replace
+  changeElectricityEmissionsFactor(selectedFactor: string) {
+    console.log('changeElectricityEmissionsFactor called with: ', selectedFactor);
+    if (selectedFactor === 'Location') {
+      this.selectedEmissions = this.selectedSubregionEmissions.locationEmissionRates;
+    } else if (selectedFactor === 'Residual') {      
+      this.selectedEmissions = this.selectedSubregionEmissions.residualEmissionRates;
+    } else if (selectedFactor === 'Projection') {
+    }
+    this.data.selectedEmissionsMarket = this.selectedEmissions[0]; 
+
   }
-
-
 
   setMarketEmissionsOptions() {
     this.selectedSubregionEmissions = this.egridService.co2Emissions.find((val) => { return this.data.eGridSubregion === val.subregion});
     if (this.selectedSubregionEmissions) {
       this.marketEmissionsOptions = this.selectedSubregionEmissions.locationEmissionRates.concat(this.selectedSubregionEmissions.residualEmissionRates);
-      this.data.selectedEmissionsMarket = this.marketEmissionsOptions[0];
+      this.data.selectedEmissionsMarket = this.marketEmissionsOptions[0];      
+      this.selectedEmissions = this.selectedSubregionEmissions.locationEmissionRates;
       this.setEmissionsFactor();
       this.save();
     }
