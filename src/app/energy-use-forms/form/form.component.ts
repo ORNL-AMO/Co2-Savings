@@ -293,8 +293,7 @@ export class FormComponent implements OnInit {
 
    setProjectionEmissionsOptions() {
     this.selectedProjectedEmissions = this.egridService.co2Emissions.find((val) => { return this.data.geaRegion === val.subregion});
-    if (this.selectedProjectedEmissions) {   
-      this.selectedEmissions = this.selectedProjectedEmissions.projectionEmissionRates;
+    if (this.selectedProjectedEmissions) {
       this.setEmissionsFactor();
       this.save();
     } 
