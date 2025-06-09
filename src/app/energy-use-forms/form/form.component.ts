@@ -224,6 +224,7 @@ export class FormComponent implements OnInit {
   
   setZipcode() {
     // gather data for any emission factor option
+    this.data.emissionFactors = 'Location';
     this.setSubRegionData();
     this.setSubRegionProjectionData();
   }
