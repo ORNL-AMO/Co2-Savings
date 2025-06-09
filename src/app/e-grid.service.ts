@@ -10,12 +10,13 @@ export class EGridService {
   zipCodeLookup;
   allZipcodesMapped: Array<any>;
   subRegionsByZipcode: Array<SubRegionData>;
+  projectionSubRegionsByZipcode: Array<SubRegionData>;
   co2Emissions: Array<SubregionEmissions>;
 
-  constructor() {}
+  constructor() { }
 
   findEGRIDCO2Emissions(eGridSubregion: string): SubregionEmissions {
-    return  _.find(this.co2Emissions, (val) => val.subregion.includes(eGridSubregion));
+    return _.find(this.co2Emissions, (val) => val.subregion.includes(eGridSubregion));
   }
 
 
@@ -33,13 +34,28 @@ export class EGridService {
         // 5: "eGRID Subregion #3"]
         let sheetOne = XLSX.utils.sheet_to_json(wb.Sheets["eGrid_zipcode_lookup"], { raw: false });
         this.setSubRegionsByZip(sheetOne)
+
+
+        //GEA data
+        //0: ZIP
+        //1: state  
+        //2: GEA Region 
+        //3: eGRID Subregion
+        let sheetTwo = XLSX.utils.sheet_to_json(wb.Sheets["eGrid_GEA_zipcode_lookup"], { raw: false });
+        this.setProjectionSRegionsByZip(sheetTwo);
+
+
         //eGrid data
         //0: SUBRGN
         //1: YEAR
         //2: CATEGORY
-        //3: CO2e
-        let sheetTwo = XLSX.utils.sheet_to_json(wb.Sheets["eGrid_co2"], { raw: false });
-        this.setCo2Emissions(sheetTwo);
+        //3: CO2
+        //4: CH4
+        //5: N2O
+        let sheetThree = XLSX.utils.sheet_to_json(wb.Sheets["eGrid_co2"], { raw: false });
+        this.setCo2Emissions(sheetThree);
+
+
       });
   }
 
@@ -61,15 +77,32 @@ export class EGridService {
     this.subRegionsByZipcode = subRegionsByZipcode;
   }
 
+  setProjectionSRegionsByZip(fileData: Array<any>) {
+    let projectionSubRegionsByZipcode = new Array<SubRegionData>();
+    fileData.forEach(result => {
+      if (result['ZIP (character)']) {
+        projectionSubRegionsByZipcode.push({
+          zip: result['ZIP (character)'],
+          state: result['state'],
+          subregions: [
+            result['Generation and Emission Assessment (GEA) region '],
+            result['eGrid Region'],
+          ]
+        })
+      }
+    });
+    this.projectionSubRegionsByZipcode = projectionSubRegionsByZipcode;
+  }
+
 
   setCo2Emissions(csvResults: Array<any>) {
     let subregionEmissions = new Array<SubregionEmissions>();
     csvResults.forEach(result => {
       let subregion: string = result['SUBRGN'];
       if (subregion) {
-        let co2Emissions: number = Number(result['CO2e']);
+        let co2Emissions: number = Number(result['CO2']) / 1000;
         let year: number = Number(result['YEAR']);
-        let category: 'LocationMix' | 'ResidualMix' = result['CATEGORY'];
+        let category: 'LocationMix' | 'ResidualMix' | 'Projection' = result['CATEGORY'];
         subregionEmissions = this.addEmissionRate(subregion, co2Emissions, year, category, subregionEmissions);
       }
     });
@@ -77,20 +110,29 @@ export class EGridService {
     this.co2Emissions = subregionEmissions;
   }
 
-  addEmissionRate(subregion: string, co2Emissions: number, year: number, category: 'LocationMix' | 'ResidualMix', subregionEmissions: Array<SubregionEmissions>): Array<SubregionEmissions> {
+  addEmissionRate(subregion: string, co2Emissions: number, year: number, category: 'LocationMix' | 'ResidualMix' | 'Projection', subregionEmissions: Array<SubregionEmissions>): Array<SubregionEmissions> {
     let subregionIndex: number = subregionEmissions.findIndex(sEmissions => { return sEmissions.subregion == subregion });
     if (subregionIndex != -1) {
       if (category == 'LocationMix') {
         subregionEmissions[subregionIndex].locationEmissionRates.push({
           year: year,
           display: `${year} Location Rate`,
-          co2Emissions: co2Emissions
+          co2Emissions: co2Emissions,
+          category: 'LocationMix'
         })
-      } else {
+      } else if (category == 'ResidualMix') {
         subregionEmissions[subregionIndex].residualEmissionRates.push({
           year: year,
           display: `${year} Residual Rate`,
-          co2Emissions: co2Emissions
+          co2Emissions: co2Emissions,
+          category: 'ResidualMix'
+        })
+      } else if (category == 'Projection') {
+        subregionEmissions[subregionIndex].projectionEmissionRates.push({
+          year: year,
+          display: `${year} Projected Rate`,
+          co2Emissions: co2Emissions,
+          category: 'Projection'
         })
       }
     } else {
@@ -100,36 +142,56 @@ export class EGridService {
           locationEmissionRates: [{
             year: year,
             display: `${year} Location Rate`,
-            co2Emissions: co2Emissions
+            co2Emissions: co2Emissions,
+            category: 'LocationMix'
           }],
-          residualEmissionRates: new Array()
+          residualEmissionRates: new Array(),
+          projectionEmissionRates: new Array(),
         })
-      } else {
+      } else if (category == 'ResidualMix') {
         subregionEmissions.push({
           subregion: subregion,
           locationEmissionRates: new Array(),
           residualEmissionRates: [{
             year: year,
             display: `${year} Residual Rate`,
-            co2Emissions: co2Emissions
-          }]
+            co2Emissions: co2Emissions,
+            category: 'ResidualMix'
+          }],
+          projectionEmissionRates: new Array(),
+        })
+      } else if (category == 'Projection') {
+        subregionEmissions.push({
+          subregion: subregion,
+          locationEmissionRates: new Array(),
+          residualEmissionRates: new Array(),
+          projectionEmissionRates: [{
+            year: year,
+            display: `${year} Projected Rate`,
+            co2Emissions: co2Emissions,
+            category: 'Projection'
+          }],
+
         })
       }
+
     }
 
     if (subregionEmissions[subregionIndex]) {
       subregionEmissions[subregionIndex].residualEmissionRates = _.orderBy(subregionEmissions[subregionIndex].residualEmissionRates, emissionRate => emissionRate.year);
       subregionEmissions[subregionIndex].locationEmissionRates = _.orderBy(subregionEmissions[subregionIndex].locationEmissionRates, emissionRate => emissionRate.year);
+      subregionEmissions[subregionIndex].projectionEmissionRates = _.orderBy(subregionEmissions[subregionIndex].projectionEmissionRates, emissionRate => emissionRate.year);
     }
     return subregionEmissions;
   }
 
 
-  getEmissionsRate(subregion: string, year: number): { marketRate: number, locationRate: number } {
+  getEmissionsRate(subregion: string, year: number): { marketRate: number, locationRate: number, projectionRate: number } {
     let subregionEmissions: SubregionEmissions = this.co2Emissions.find(emissions => { return emissions.subregion == subregion });
     if (subregionEmissions) {
       let marketRate: number = 0;
       let locationRate: number = 0;
+      let projectionRate: number = 0;
       if (subregionEmissions.locationEmissionRates.length != 0) {
         let closestYearRate: { co2Emissions: number, year: number } = _.minBy(subregionEmissions.locationEmissionRates, (emissionRate: { co2Emissions: number, year: number }) => {
           return Math.abs(emissionRate.year - year);
@@ -142,9 +204,15 @@ export class EGridService {
         });
         marketRate = closestYearRate.co2Emissions;
       }
-      return { marketRate: marketRate, locationRate: locationRate };
+      if (subregionEmissions.projectionEmissionRates.length != 0) {
+        let closestYearRate: { co2Emissions: number, year: number } = _.minBy(subregionEmissions.projectionEmissionRates, (emissionRate: { co2Emissions: number, year: number }) => {
+          return Math.abs(emissionRate.year - year);
+        });
+        projectionRate = closestYearRate.co2Emissions;
+      }
+      return { marketRate: marketRate, locationRate: locationRate, projectionRate: projectionRate };
     }
-    return { marketRate: 0, locationRate: 0 };
+    return { marketRate: 0, locationRate: 0, projectionRate: 0 };
   }
 
 }
@@ -163,10 +231,16 @@ export interface SubregionEmissions {
   subregion: string,
   locationEmissionRates: Array<MarketYearEmissions>,
   residualEmissionRates: Array<MarketYearEmissions>,
+  projectionEmissionRates: Array<MarketYearEmissions>,
   co2Factor?: number,
   chFactor?: number,
   n2OFactor?: number,
 }
 
 
-export interface MarketYearEmissions { display: string, co2Emissions: number, year: number }
+export interface MarketYearEmissions {
+  display: string,
+  co2Emissions: number,
+  year: number,
+  category: 'LocationMix' | 'ResidualMix' | 'Projection'
+}

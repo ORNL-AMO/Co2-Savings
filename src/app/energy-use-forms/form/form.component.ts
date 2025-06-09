@@ -41,10 +41,14 @@ export class FormComponent implements OnInit {
   energyUnits: string;
   mobileUnits: string = 'gal';
   fugitiveUnits: string = 'lb';
-  selectedSubregionEmissions: SubregionEmissions;
+  selectedSubregionEmissions: SubregionEmissions;  
+  selectedProjectedEmissions: SubregionEmissions;
+  selectedEmissions: Array<MarketYearEmissions>;
 
   hasValidSubRegion: boolean;
+  hasValidGEARegion: boolean;
   zipCodeSubRegionData: Array<string>;
+  zipCodeGEARegionData: Array<string>;
   constructor(private co2SavingsService: Co2SavingsService, 
     private cd: ChangeDetectorRef, private egridService: EGridService) { }
 
@@ -137,6 +141,8 @@ export class FormComponent implements OnInit {
     this.data.nitrousFactor = 0;
     this.data.carbonFactor = 0;
     this.data.zipcode = "00000"
+    this.data.emissionFactors = 'Location';
+    this.data.geaRegion = undefined;
     this.setSubRegionData();
     this.save();
   }
@@ -217,7 +223,10 @@ export class FormComponent implements OnInit {
 
   
   setZipcode() {
+    // gather data for any emission factor option
+    this.data.emissionFactors = 'Location';
     this.setSubRegionData();
+    this.setSubRegionProjectionData();
   }
 
   setSubRegionData() {
@@ -239,14 +248,56 @@ export class FormComponent implements OnInit {
     }
   }
 
+  setSubRegionProjectionData() {
+    this.zipCodeGEARegionData = [];
+    let subRegionData: SubRegionData = _.find(this.egridService.projectionSubRegionsByZipcode, (val) => this.data.zipcode === val.zip);
+    if (subRegionData) {
+      this.hasValidGEARegion = true;
+      subRegionData.subregions.forEach(subregion => {
+        if (subregion) {
+          this.zipCodeGEARegionData.push(subregion);
+        }
+      });
+      this.data.geaRegion = this.zipCodeGEARegionData[0];
+      this.setProjectionEmissionsOptions();
+    } else {
+      this.hasValidGEARegion = false;
+    }
+
+    if (this.data.energyType != 'electricity') {
+      this.setSubRegionEmissionsOutput();
+    }
+  }
+
+  changeElectricityEmissionsFactor(selectedFactor: string) {
+    if (selectedFactor === 'Location') {
+      this.selectedEmissions = this.selectedSubregionEmissions.locationEmissionRates;
+    } else if (selectedFactor === 'Residual') {      
+      this.selectedEmissions = this.selectedSubregionEmissions.residualEmissionRates;
+    } else if (selectedFactor === 'Projection') {
+      this.selectedEmissions = this.selectedProjectedEmissions.projectionEmissionRates;
+    }
+    this.data.selectedEmissionsMarket = this.selectedEmissions[0]; 
+
+  }
+
   setMarketEmissionsOptions() {
     this.selectedSubregionEmissions = this.egridService.co2Emissions.find((val) => { return this.data.eGridSubregion === val.subregion});
     if (this.selectedSubregionEmissions) {
       this.marketEmissionsOptions = this.selectedSubregionEmissions.locationEmissionRates.concat(this.selectedSubregionEmissions.residualEmissionRates);
-      this.data.selectedEmissionsMarket = this.marketEmissionsOptions[0];
+      this.data.selectedEmissionsMarket = this.marketEmissionsOptions[0];      
+      this.selectedEmissions = this.selectedSubregionEmissions.locationEmissionRates;
       this.setEmissionsFactor();
       this.save();
     }
+  }
+
+   setProjectionEmissionsOptions() {
+    this.selectedProjectedEmissions = this.egridService.co2Emissions.find((val) => { return this.data.geaRegion === val.subregion});
+    if (this.selectedProjectedEmissions) {
+      this.setEmissionsFactor();
+      this.save();
+    } 
   }
 
   setEmissionsFactor() {
@@ -263,6 +314,7 @@ export class FormComponent implements OnInit {
       this.save();
     }
   }
+  
   setMobileOptions() {
     let tmpMobile: MobileEmission = this.mobileEmissions.find((val) => { return this.data.energySource === val.energySource; });
     if (tmpMobile) {
