@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular
 import { Subscription } from 'rxjs';
 import { Co2SavingsData, Co2SavingsService } from 'src/app/co2-savings.service';
 import { FuelTypeProperties, OtherFuel, otherFuels } from 'src/app/co2FuelSavingsFuels';
-import { FugitiveTypeProperties, Fugitive, fugitives } from 'src/app/co2FugitiveSavings';
+import { Fugitive, fugitives, GlobalWarmingPotential } from 'src/app/co2FugitiveSavings';
 import { customEmissions, Custom, CustomTypeProperties } from 'src/app/co2CustomSavings';
 import { MobileEmission, MobileTypeProperties, mobileEmissions } from 'src/app/co2MobileSavings';
 import { ModalDirective } from 'ngx-bootstrap/modal';
@@ -33,7 +33,7 @@ export class FormComponent implements OnInit {
   mobileEmissions: Array<MobileEmission>;
   fuelOptions: Array<FuelTypeProperties>;
   mobileOptions: Array<MobileTypeProperties>;
-  fugitiveOptions: Array<FugitiveTypeProperties>;
+  fugitiveOptions: Array<GlobalWarmingPotential>;
   marketEmissionsOptions: Array<MarketYearEmissions> = [];
   customOptions: CustomTypeProperties;
   isFormChange: boolean = false;
@@ -49,6 +49,7 @@ export class FormComponent implements OnInit {
   hasValidGEARegion: boolean;
   zipCodeSubRegionData: Array<string>;
   zipCodeGEARegionData: Array<string>;
+  gwpVersionSub: Subscription;
   constructor(private co2SavingsService: Co2SavingsService, 
     private cd: ChangeDetectorRef, private egridService: EGridService) { }
 
@@ -70,14 +71,14 @@ export class FormComponent implements OnInit {
     this.customEmissions = customEmissions;
     if (this.isBaseline) {
       this.modId = '_baseline_';
-      this.dataSub = this.co2SavingsService.baselineData.subscribe(val => {
-        if (this.isFormChange == false && val && val[this.index]) {
+      this.dataSub = this.co2SavingsService.baselineData.subscribe((co2SavingsData: Array<Co2SavingsData>) => {
+        if (this.isFormChange == false && co2SavingsData && co2SavingsData[this.index]) {
           let currentEnergySource: string;
           if (this.data) {
             currentEnergySource = this.data.energySource;
           }
-          this.data = val[this.index];
-          if (val[this.index].energySource != currentEnergySource) {
+          this.data = co2SavingsData[this.index];
+          if (co2SavingsData[this.index].energySource != currentEnergySource) {
             this.initOptions();
           }
         } else {
@@ -86,14 +87,14 @@ export class FormComponent implements OnInit {
       });
     } else {
       this.modId = '_modification_';
-      this.dataSub = this.co2SavingsService.modificationData.subscribe(val => {
-        if (this.isFormChange == false && val && val[this.index]) {
+      this.dataSub = this.co2SavingsService.modificationData.subscribe((co2SavingsData: Array<Co2SavingsData>) => {
+        if (this.isFormChange == false && co2SavingsData && co2SavingsData[this.index]) {
           let currentEnergySource: string;
           if (this.data) {
             currentEnergySource = this.data.energySource;
           }
-          this.data = val[this.index];
-          if (val[this.index].energySource != currentEnergySource) {
+          this.data = co2SavingsData[this.index];
+          if (co2SavingsData[this.index].energySource != currentEnergySource) {
             this.initOptions();
           }
         } else {
@@ -101,11 +102,19 @@ export class FormComponent implements OnInit {
         }
       });
     }
+
+    this.gwpVersionSub = this.co2SavingsService.gwpVersion.subscribe(val => {
+      if (this.data && this.data.energyType == 'fugitive') {
+        this.setGlobalWarmingPotential();
+      }
+    });
   }
+  
 
   ngOnDestroy() {
     this.dataSub.unsubscribe();
     this.energyUnitsSub.unsubscribe();
+    this.gwpVersionSub.unsubscribe();
   }
 
   focusField(str: string) {
@@ -213,10 +222,11 @@ export class FormComponent implements OnInit {
     this.save();
   }
 
-  setFugitive() {
-    let tmpNewFugitive: FugitiveTypeProperties = this.fugitiveOptions.find((val) => { return this.data.fugitiveType === val.fugitiveType; });
-    if (tmpNewFugitive) {
-      this.data.totalEmissionOutputRate = tmpNewFugitive.warmingPotential;
+  setGlobalWarmingPotential() {
+    // * comparing strings, could be improved to use GlobalWarmingPotential.value or an enum
+    const globalWarmingPotential: GlobalWarmingPotential = this.fugitiveOptions.find((val) => { return this.data.fugitiveType === val.label; });
+    if (globalWarmingPotential) {
+      this.data.totalEmissionOutputRate = this.co2SavingsService.getIPCCReportWarmingPotential(globalWarmingPotential);
       this.save();
     }
   }

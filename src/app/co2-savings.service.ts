@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { MobileTypeProperties } from './co2MobileSavings';
 import { MarketYearEmissions } from './e-grid.service';
+import { GlobalWarmingPotential } from './co2FugitiveSavings';
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +13,13 @@ export class Co2SavingsService {
   baselineData: BehaviorSubject<Array<Co2SavingsData>>;
   modificationData: BehaviorSubject<Array<Co2SavingsData>>;
   energyUnits: BehaviorSubject<string>;
+  gwpVersion: BehaviorSubject<GwpVersion>;
   modalOpen: BehaviorSubject<boolean>;
   constructor() {
     this.currentField = new BehaviorSubject<string>('default');
     this.modalOpen = new BehaviorSubject<boolean>(false);
     this.energyUnits = new BehaviorSubject<string>('MMBtu');
+    this.gwpVersion = new BehaviorSubject<GwpVersion>('gwp_ar4');
     this.baselineData = new BehaviorSubject<Array<Co2SavingsData>>([{
       energyType: 'fuel',
       totalEmissionOutputRate: undefined,
@@ -140,6 +143,25 @@ export class Co2SavingsService {
     }
   }
 
+  getIPCCReportWarmingPotential(fugitiveType: GlobalWarmingPotential): number {
+    let gwpVersion: GwpVersion = this.gwpVersion.getValue();
+    let warmingPotential: number;
+    switch (gwpVersion) {
+      case 'gwp_ar4':
+        warmingPotential = fugitiveType.gwp_ar4;
+        break;
+      case 'gwp_ar5':
+        warmingPotential = fugitiveType.gwp_ar5;
+        break;
+      case 'gwp_ar6':
+        warmingPotential = fugitiveType.gwp_ar6;
+        break;
+      default:
+        warmingPotential = fugitiveType.gwp_ar4;
+    }
+    return warmingPotential;
+  }
+
 }
 
 
@@ -163,3 +185,5 @@ export interface Co2SavingsData {
   emissionFactors?: 'Location' | 'Residual' | 'Projection',
   geaRegion?: string,
 }
+
+export type GwpVersion = 'gwp_ar4' | 'gwp_ar5' | 'gwp_ar6';
