@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { MobileTypeProperties } from './co2MobileSavings';
 import { MarketYearEmissions } from './e-grid.service';
-import { GlobalWarmingPotential } from './co2FugitiveSavings';
+import { CH4_FOSSIL_Type, GlobalWarmingPotential, N2O_Type } from './co2FugitiveSavings';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +19,7 @@ export class Co2SavingsService {
     this.currentField = new BehaviorSubject<string>('default');
     this.modalOpen = new BehaviorSubject<boolean>(false);
     this.energyUnits = new BehaviorSubject<string>('MMBtu');
-    this.gwpVersion = new BehaviorSubject<GwpVersion>('gwp_ar4');
+    this.gwpVersion = new BehaviorSubject<GwpVersion>('gwp_ar6');
     this.baselineData = new BehaviorSubject<Array<Co2SavingsData>>([{
       energyType: 'fuel',
       totalEmissionOutputRate: undefined,
@@ -46,7 +46,9 @@ export class Co2SavingsService {
     if (dataCpy.totalEmissionOutputRate && (data.energyType == 'fugitive' || (data.energyType == 'custom' && data.energySource == 'Fugitive'))) {
       data.totalEmissionOutput = (dataCpy.totalEmissionOutputRate) * (dataCpy.energyUse / 1000);
     } else if (dataCpy.energyUse) {
-      data.totalEmissionOutput = (dataCpy.energyUse) * (dataCpy.carbonFactor + dataCpy.methaneFactor * 25 / 1000 + dataCpy.nitrousFactor * 298 / 1000);
+      const ch4Potential = this.getIPCCReportWarmingPotential(CH4_FOSSIL_Type);
+      const n2oPotential = this.getIPCCReportWarmingPotential(N2O_Type);
+      data.totalEmissionOutput = (dataCpy.energyUse) * (dataCpy.carbonFactor + dataCpy.methaneFactor * ch4Potential  / 1000 + dataCpy.nitrousFactor * n2oPotential / 1000);
       //convert results kg to tonne
       data.totalEmissionOutput = data.totalEmissionOutput * .001;
 

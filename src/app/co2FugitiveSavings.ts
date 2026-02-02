@@ -1,3 +1,5 @@
+// * Constants in this file must be updated each year from supplied csv/json
+
 export interface Fugitive {
     energySource: string;
     fugitiveTypes: Array<GlobalWarmingPotential>;
@@ -16,6 +18,25 @@ export interface GlobalWarmingPotential {
     gwp_ar5: number,
     gwp_ar6: number,
     blend?: string
+};
+
+// * MUST be updated alongside fugitives data below 
+export const CH4_FOSSIL_Type = {
+    value: 102,
+    label: 'CH4 - fossil',
+    display: 'CH&#8324; - fossil',
+    gwp_ar4: 25,
+    gwp_ar5: 30,
+    gwp_ar6: 29.8
+};
+
+export const N2O_Type = {
+    value: 103,
+    label: 'N2O',
+    display: 'N&#8322;O',
+    gwp_ar4: 298,
+    gwp_ar5: 265,
+    gwp_ar6: 273
 };
 
 // * shared datashape with VERIFI. Can pull from VERIFI during yearly updates. (VERIFI - globalWarmingPotential.ts)
@@ -39,22 +60,8 @@ export const fugitives: Array<Fugitive> = [
                 gwp_ar5: 1,
                 gwp_ar6: 1
             },
-            {
-                value: 102,
-                label: 'CH4 - fossil',
-                display: 'CH&#8324; - fossil',
-                gwp_ar4: 25,
-                gwp_ar5: 30,
-                gwp_ar6: 29.8
-            },
-            {
-                value: 103,
-                label: 'N2O',
-                display: 'N&#8322;O',
-                gwp_ar4: 298,
-                gwp_ar5: 265,
-                gwp_ar6: 273
-            },
+            {...CH4_FOSSIL_Type},
+            {...N2O_Type},
             {
                 value: 1,
                 label: 'HFC-23',
