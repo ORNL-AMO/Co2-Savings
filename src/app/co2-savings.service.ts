@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { MobileTypeProperties } from './co2MobileSavings';
 import { MarketYearEmissions } from './e-grid.service';
-import { CH4_FOSSIL_Type, GlobalWarmingPotential, N2O_Type } from './co2FugitiveSavings';
+import { CH4_FOSSIL_Type, Fugitive, GlobalWarmingPotential, N2O_Type } from './co2FugitiveSavings';
 
 @Injectable({
   providedIn: 'root'
@@ -42,21 +42,32 @@ export class Co2SavingsService {
       let conversionHelper: number = 0.453592;
       dataCpy.totalEmissionOutputRate = dataCpy.totalEmissionOutputRate * conversionHelper;
     }
-    //set results on original obj
-    if (dataCpy.totalEmissionOutputRate && (data.energyType == 'fugitive' || (data.energyType == 'custom' && data.energySource == 'Fugitive'))) {
-      data.totalEmissionOutput = (dataCpy.totalEmissionOutputRate) * (dataCpy.energyUse / 1000);
-    } else if (dataCpy.energyUse) {
-      const ch4Potential = this.getIPCCReportWarmingPotential(CH4_FOSSIL_Type);
-      const n2oPotential = this.getIPCCReportWarmingPotential(N2O_Type);
-      data.totalEmissionOutput = (dataCpy.energyUse) * (dataCpy.carbonFactor + dataCpy.methaneFactor * ch4Potential  / 1000 + dataCpy.nitrousFactor * n2oPotential / 1000);
-      //convert results kg to tonne
-      data.totalEmissionOutput = data.totalEmissionOutput * .001;
 
+    if (dataCpy.totalEmissionOutputRate && (data.energyType == 'fugitive' || (data.energyType == 'custom' && data.energySource == 'Fugitive'))) {
+      data.totalEmissionOutput = this.calculateFugitiveEmissionsFactor(dataCpy);
+    } else if (dataCpy.energyUse) {
+      data.totalEmissionOutput = this.calculateEmissionsFactor(dataCpy.energyUse, dataCpy.carbonFactor, dataCpy.methaneFactor, dataCpy.nitrousFactor);
     } else {
       data.totalEmissionOutput = 0;
     }
     return data;
   }
+
+  calculateFugitiveEmissionsFactor(co2SavingsData: Co2SavingsData): number {
+    let emissionsFactor: number = co2SavingsData.totalEmissionOutputRate * (co2SavingsData.energyUse ?? 0 / 1000);
+    return emissionsFactor;
+  }
+
+  calculateEmissionsFactor(energyUse: number, carbonFactor: number, methaneFactor: number, nitrousFactor: number): number {
+    const ch4Potential = this.getIPCCReportWarmingPotential(CH4_FOSSIL_Type);
+    const n2oPotential = this.getIPCCReportWarmingPotential(N2O_Type);
+    let emissionsFactor: number = (energyUse ?? 0) * (carbonFactor + methaneFactor * ch4Potential  / 1000 + nitrousFactor * n2oPotential / 1000);
+    emissionsFactor *= .001;
+    
+    console.log('emissions factor', emissionsFactor); 
+    return emissionsFactor;
+  }
+
 
   generateExample() {
     let energyUse: number = 1995;
