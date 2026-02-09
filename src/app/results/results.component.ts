@@ -1,6 +1,7 @@
-import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { PlotlyService } from 'angular-plotly.js';
-import { Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Co2SavingsData, Co2SavingsService } from '../co2-savings.service';
 
 @Component({
@@ -10,16 +11,17 @@ import { Co2SavingsData, Co2SavingsService } from '../co2-savings.service';
     standalone: false
 })
 export class ResultsComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+  private plotlyService = inject(PlotlyService);
+  private co2SavingsService = inject(Co2SavingsService);
+  private cd = inject(ChangeDetectorRef);
 
   @ViewChild('gaugeChart', { static: false }) gaugeChart: ElementRef;
 
-  baselineData: Array<Co2SavingsData>;
-  baselineDataSub: Subscription;
-  modificationData: Array<Co2SavingsData>;
-  modificationDataSub: Subscription;
-  baselineTotal: number;
-  modificationTotal: number;
-  energyUnitsSub: Subscription;
+  baselineData: Array<Co2SavingsData> = [];
+  modificationData: Array<Co2SavingsData> = [];
+  baselineTotal: number = 0;
+  modificationTotal: number = 0;
 
   graphColors: Array<string> = [
     '#1E7640',
@@ -37,23 +39,32 @@ export class ResultsComponent implements OnInit {
     '#DD7164',
     '#3f4a7d'
   ];
-
-  constructor(private co2SavingsService: Co2SavingsService, private plotlyService: PlotlyService, private cd: ChangeDetectorRef) { }
+  energyUnitsSub: Subscription;
 
   ngOnInit(): void {
-    this.energyUnitsSub = this.co2SavingsService.energyUnits.subscribe(val => {
-      this.drawChart();
-    });
-    this.baselineDataSub = this.co2SavingsService.baselineData.subscribe(val => {
-      this.baselineData = this.setResults(val);
-      this.baselineTotal = this.getTotal(this.baselineData);
-      this.cd.detectChanges();
+    this.co2SavingsService.energyUnits
+    .pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(val => {
       this.drawChart();
     });
 
-    this.modificationDataSub = this.co2SavingsService.modificationData.subscribe(val => {
-      this.modificationData = this.setResults(val);
-      this.modificationTotal = this.getTotal(this.modificationData);
+    combineLatest([
+      this.co2SavingsService.baselineData,
+      this.co2SavingsService.modificationData,
+      this.co2SavingsService.gwpVersion,
+    ]).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(([baseline, modification, gwpVersion]) => {
+      this.baselineData = this.setResults(baseline);
+      this.baselineTotal = this.getTotal(this.baselineData);
+      if (modification && modification.length > 0) {
+        this.modificationData = this.setResults(modification);
+        this.modificationTotal = this.getTotal(this.modificationData);
+      } else {
+        this.modificationData = [];
+        this.modificationTotal = 0;
+      }
       this.cd.detectChanges();
       this.drawChart();
     });
@@ -63,12 +74,6 @@ export class ResultsComponent implements OnInit {
     this.drawChart();
   }
 
-
-  ngOnDestroy() {
-    this.baselineDataSub.unsubscribe();
-    this.modificationDataSub.unsubscribe();
-    this.energyUnitsSub.unsubscribe();
-  }
   setResults(data: Array<Co2SavingsData>): Array<Co2SavingsData> {
     if (data) {
       data.forEach(item => {

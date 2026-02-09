@@ -206,9 +206,9 @@
             <label for="{{'fugitiveType'+modId+index}}">Fugitive Type</label>
             <div class="input-group">
                 <select name="{{'fugitiveType'+modId+index}}" class="form-control" id="{{'fugitiveType'+modId+index}}"
-                    [(ngModel)]="data.fugitiveType" (change)="setFugitive()" [required]="true" [disabled]="!selected">
-                    <option *ngFor="let option of fugitiveOptions" [ngValue]="option.fugitiveType">
-                        {{option.fugitiveType}}
+                    [(ngModel)]="data.fugitiveType" (change)="setGlobalWarmingPotential()" [required]="true" [disabled]="!selected">
+                    <option *ngFor="let option of fugitiveOptions" [ngValue]="option.label">
+                        {{option.label}}
                     </option>
                 </select>
             </div>

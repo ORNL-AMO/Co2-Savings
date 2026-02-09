@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Co2SavingsService } from '../co2-savings.service';
+import { Co2SavingsService, GwpVersion } from '../co2-savings.service';
 
 @Component({
     selector: 'app-banner',
@@ -17,12 +17,15 @@ export class BannerComponent implements OnInit {
   displayUnitsModal: boolean = false;
   energyUnits: string;
   energyUnitsSub: Subscription;
+  gwpVersion: GwpVersion = 'gwp_ar4';
+
   constructor(private co2SavingsService: Co2SavingsService, private eRef: ElementRef) { }
 
   ngOnInit(): void {
+    this.gwpVersion = this.co2SavingsService.gwpVersion.getValue();
     this.energyUnitsSub = this.co2SavingsService.energyUnits.subscribe(val => {
       this.energyUnits = val;
-    })
+    });
   }
 
   ngOnDestroy(){
@@ -53,6 +56,10 @@ export class BannerComponent implements OnInit {
 
   setUnits(str: string){
     this.co2SavingsService.energyUnits.next(str);
+  }
+
+  setGwpVersion() {
+    this.co2SavingsService.gwpVersion.next(this.gwpVersion);
   }
 
   documentClick() {
